@@ -11,14 +11,24 @@ import { Textarea } from "~/components/ui/textarea";
 import { Badge } from "~/components/ui/badge";
 import { toast } from "sonner";
 import {
-  ArrowLeft, Globe, Loader2, Send, Trash2, Save, ExternalLink,
-  Info, FileText, PanelRightClose, PanelRightOpen,
+  ArrowLeft,
+  Globe,
+  Loader2,
+  Send,
+  Trash2,
+  Save,
+  ExternalLink,
+  Info,
+  FileText,
+  PanelRightClose,
+  PanelRightOpen,
 } from "lucide-react";
 import BlockEditor from "~/components/admin/BlockEditor";
 import ImageUpload from "~/components/admin/ImageUpload";
 import { AdminTabs } from "~/components/admin/AdminTabs";
 import { cn } from "~/lib/utils";
 import type { Block } from "~/lib/blocks";
+import RevisionHistory from "~/components/admin/RevisionHistory";
 
 type DraftStatus = "clean" | "unsaved" | "saving" | "saved";
 type EditorTab = "info" | "content";
@@ -33,19 +43,26 @@ export default function CompanyPageEditor() {
   const companyId = Number(params.id);
 
   // ── Company meta ──────────────────────────────────────────────────────────────
-  const { data: companies } = api.companies.getAll.useQuery();
+  const { data: companies } = api.companies.getAllForEditor.useQuery();
   const company = companies?.find((c) => c.id === companyId);
   const upsertCompany = api.companies.upsert.useMutation({
     onSuccess: () => toast.success("Program info saved"),
     onError: (e) => toast.error(e.message),
   });
 
-  const [name,        setName]        = useState("");
-  const [tagline,     setTagline]     = useState("");
+  const [name, setName] = useState("");
+  const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl,    setImageUrl]    = useState("");
-  const [status,      setStatus]      = useState<"active" | "coming_soon" | "archived">("active");
-  const [metaDirty,   setMetaDirty]   = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [ogImage, setOgImage] = useState("");
+  const [canonical, setCanonical] = useState("");
+  const [noIndex, setNoIndex] = useState(false);
+  const [status, setStatus] = useState<"active" | "coming_soon" | "archived">(
+    "active",
+  );
+  const [metaDirty, setMetaDirty] = useState(false);
 
   useEffect(() => {
     if (!company) return;
@@ -53,6 +70,11 @@ export default function CompanyPageEditor() {
     setTagline(company.tagline ?? "");
     setDescription(company.description ?? "");
     setImageUrl(company.imageUrl ?? "");
+    setSeoTitle(company.seoTitle ?? "");
+    setSeoDescription(company.seoDescription ?? "");
+    setOgImage(company.ogImage ?? "");
+    setCanonical(company.canonical ?? "");
+    setNoIndex(company.noIndex);
     setStatus(company.status);
     setMetaDirty(false);
   }, [company]);
@@ -63,9 +85,14 @@ export default function CompanyPageEditor() {
       id: company.id,
       name,
       slug: company.slug,
-      tagline:     tagline || undefined,
+      tagline: tagline || undefined,
       description: description || undefined,
-      imageUrl:    imageUrl || undefined,
+      imageUrl: imageUrl || undefined,
+      seoTitle: seoTitle || null,
+      seoDescription: seoDescription || null,
+      ogImage: ogImage || null,
+      canonical: canonical || null,
+      noIndex,
       status,
       order: company.order,
     });
@@ -78,17 +105,20 @@ export default function CompanyPageEditor() {
     { enabled: !isNaN(companyId), refetchOnWindowFocus: false },
   );
   const saveDraftMutation = api.companyPage.saveDraft.useMutation();
-  const saveMutation      = api.companyPage.save.useMutation();
+  const saveMutation = api.companyPage.save.useMutation();
+  const discardMutation = api.companyPage.discard.useMutation();
 
-  const [blocks,      setBlocks]      = useState<Block[]>([]);
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [draftStatus, setDraftStatus] = useState<DraftStatus>("clean");
-  const [iframeKey,   setIframeKey]   = useState(0);
+  const [iframeKey, setIframeKey] = useState(0);
 
   useEffect(() => {
     if (!pageData) return;
     try {
-      const draft = pageData.draftLayout ? JSON.parse(pageData.draftLayout) as Block[] : null;
-      const live  = JSON.parse(pageData.layout) as Block[];
+      const draft = pageData.draftLayout
+        ? (JSON.parse(pageData.draftLayout) as Block[])
+        : null;
+      const live = JSON.parse(pageData.layout) as Block[];
       setBlocks(draft ?? live);
       setDraftStatus(draft ? "saved" : "clean");
     } catch {
@@ -98,34 +128,47 @@ export default function CompanyPageEditor() {
 
   useEffect(() => {
     void fetch("/api/draft/enter");
-    return () => { void fetch("/api/draft/exit"); };
+    return () => {
+      void fetch("/api/draft/exit");
+    };
   }, []);
 
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const pendingBlocks = useRef<Block[]>([]);
 
-  const flushDraft = useCallback(async (blocksToSave: Block[]) => {
-    setDraftStatus("saving");
-    try {
-      await saveDraftMutation.mutateAsync({
-        companyId,
-        draftLayout: JSON.stringify(blocksToSave),
-      });
-      setDraftStatus("saved");
-      setIframeKey((k) => k + 1);
-    } catch {
-      toast.error("Auto-save failed");
-      setDraftStatus("unsaved");
-    }
-  }, [companyId, saveDraftMutation]);
+  const flushDraft = useCallback(
+    async (blocksToSave: Block[]) => {
+      setDraftStatus("saving");
+      try {
+        await saveDraftMutation.mutateAsync({
+          companyId,
+          draftLayout: JSON.stringify(blocksToSave),
+        });
+        setDraftStatus("saved");
+        setIframeKey((k) => k + 1);
+      } catch {
+        toast.error("Auto-save failed");
+        setDraftStatus("unsaved");
+      }
+    },
+    [companyId, saveDraftMutation],
+  );
 
-  const handleBlocksChange = useCallback((newBlocks: Block[]) => {
-    setBlocks(newBlocks);
-    pendingBlocks.current = newBlocks;
-    setDraftStatus("unsaved");
-    clearTimeout(debounceTimer.current);
-    debounceTimer.current = setTimeout(() => void flushDraft(pendingBlocks.current), 800);
-  }, [flushDraft]);
+  const handleBlocksChange = useCallback(
+    (newBlocks: Block[]) => {
+      setBlocks(newBlocks);
+      pendingBlocks.current = newBlocks;
+      setDraftStatus("unsaved");
+      clearTimeout(debounceTimer.current);
+      debounceTimer.current = setTimeout(
+        () => void flushDraft(pendingBlocks.current),
+        800,
+      );
+    },
+    [flushDraft],
+  );
 
   const [publishing, setPublishing] = useState(false);
   const handlePublish = async () => {
@@ -135,7 +178,7 @@ export default function CompanyPageEditor() {
     try {
       await saveMutation.mutateAsync({
         companyId,
-        layout:      JSON.stringify(blocks),
+        layout: JSON.stringify(blocks),
         draftLayout: null,
       });
       await refetch();
@@ -155,11 +198,7 @@ export default function CompanyPageEditor() {
     clearTimeout(debounceTimer.current);
     setDiscarding(true);
     try {
-      await saveMutation.mutateAsync({
-        companyId,
-        layout:      pageData?.layout ?? "[]",
-        draftLayout: null,
-      });
+      await discardMutation.mutateAsync({ companyId });
       await refetch();
       setDraftStatus("clean");
       setIframeKey((k) => k + 1);
@@ -172,13 +211,13 @@ export default function CompanyPageEditor() {
   };
 
   // ── UI state ──────────────────────────────────────────────────────────────────
-  const [activeTab,    setActiveTab]    = useState<EditorTab>("info");
-  const [previewOpen,  setPreviewOpen]  = useState(true);
+  const [activeTab, setActiveTab] = useState<EditorTab>("info");
+  const [previewOpen, setPreviewOpen] = useState(true);
   const [previewWidth, setPreviewWidth] = useState(PREVIEW_DEFAULT_WIDTH);
 
   // Resize drag handle
-  const containerRef   = useRef<HTMLDivElement>(null);
-  const isDragging     = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
   const [dragging, setDragging] = useState(false); // for cursor override
 
   const onDividerMouseDown = useCallback((e: React.MouseEvent) => {
@@ -191,7 +230,9 @@ export default function CompanyPageEditor() {
       const rect = containerRef.current.getBoundingClientRect();
       const newWidth = rect.right - mv.clientX;
       const maxWidth = rect.width - EDITOR_MIN_WIDTH - 4; // 4 = divider
-      setPreviewWidth(Math.max(PREVIEW_MIN_WIDTH, Math.min(maxWidth, newWidth)));
+      setPreviewWidth(
+        Math.max(PREVIEW_MIN_WIDTH, Math.min(maxWidth, newWidth)),
+      );
     };
 
     const onUp = () => {
@@ -208,21 +249,22 @@ export default function CompanyPageEditor() {
   const publicHref = company ? `/programs/${company.slug}` : "/programs";
 
   const draftStatusLabel: Record<DraftStatus, string | null> = {
-    clean:   null,
+    clean: null,
     unsaved: "Unsaved changes",
-    saving:  "Saving draft…",
-    saved:   "Draft saved · not published",
+    saving: "Saving draft…",
+    saved: "Draft saved · not published",
   };
 
   const editorTabs = [
-    { id: "info"    as EditorTab, label: "Info",    icon: Info },
+    { id: "info" as EditorTab, label: "Info", icon: Info },
     {
       id: "content" as EditorTab,
       label: "Content",
       icon: FileText,
-      indicator: draftStatus !== "clean"
-        ? <span className="ml-1 h-1.5 w-1.5 rounded-full bg-amber-400 inline-block" />
-        : undefined,
+      indicator:
+        draftStatus !== "clean" ? (
+          <span className="ml-1 h-1.5 w-1.5 rounded-full bg-amber-400 inline-block" />
+        ) : undefined,
     },
   ];
 
@@ -230,7 +272,10 @@ export default function CompanyPageEditor() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
         <p>Program not found.</p>
-        <Button variant="outline" onClick={() => router.push("/admin/companies")}>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/admin/companies")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Programs
         </Button>
       </div>
@@ -240,11 +285,13 @@ export default function CompanyPageEditor() {
   return (
     <div
       ref={containerRef}
-      className={cn("flex h-full overflow-hidden", dragging && "select-none cursor-col-resize")}
+      className={cn(
+        "flex h-full overflow-hidden",
+        dragging && "select-none cursor-col-resize",
+      )}
     >
       {/* ── LEFT: Editor panel — always flex-1, fills all space when preview closed ── */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden border-r bg-background">
-
         {/* Top bar */}
         <div className="flex items-center gap-3 px-4 py-3 border-b shrink-0">
           <Link
@@ -275,41 +322,134 @@ export default function CompanyPageEditor() {
         </div>
 
         {/* Tab bar */}
-        <AdminTabs tabs={editorTabs} active={activeTab} onChange={setActiveTab} />
+        <AdminTabs
+          tabs={editorTabs}
+          active={activeTab}
+          onChange={setActiveTab}
+        />
 
         {/* Scrollable tab content */}
         <div className="flex-1 overflow-y-auto">
-
           {/* Info tab */}
           {activeTab === "info" && (
             <div className="px-5 py-5 space-y-4 max-w-xl">
               <div className="space-y-1.5">
                 <Label className="text-xs">Name</Label>
-                <Input value={name} onChange={(e) => { setName(e.target.value); setMetaDirty(true); }} />
+                <Input
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setMetaDirty(true);
+                  }}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Tagline</Label>
-                <Input value={tagline} onChange={(e) => { setTagline(e.target.value); setMetaDirty(true); }} placeholder="Short hook for the program" />
+                <Input
+                  value={tagline}
+                  onChange={(e) => {
+                    setTagline(e.target.value);
+                    setMetaDirty(true);
+                  }}
+                  placeholder="Short hook for the program"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Description</Label>
-                <Textarea value={description} onChange={(e) => { setDescription(e.target.value); setMetaDirty(true); }} rows={4} className="resize-none" placeholder="What do trainees do here?" />
+                <Textarea
+                  value={description}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    setMetaDirty(true);
+                  }}
+                  rows={4}
+                  className="resize-none"
+                  placeholder="What do trainees do here?"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Cover Image</Label>
-                <ImageUpload value={imageUrl} onChange={(v) => { setImageUrl(v); setMetaDirty(true); }} />
+                <ImageUpload
+                  value={imageUrl}
+                  onChange={(v) => {
+                    setImageUrl(v);
+                    setMetaDirty(true);
+                  }}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Status</Label>
                 <select
                   value={status}
-                  onChange={(e) => { setStatus(e.target.value as typeof status); setMetaDirty(true); }}
+                  onChange={(e) => {
+                    setStatus(e.target.value as typeof status);
+                    setMetaDirty(true);
+                  }}
                   className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
                 >
                   <option value="active">Active</option>
                   <option value="coming_soon">Coming Soon</option>
                   <option value="archived">Archived</option>
                 </select>
+              </div>
+              <div className="space-y-3 rounded-md border p-3">
+                <p className="text-sm font-medium">Search and sharing</p>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">SEO title</Label>
+                  <Input
+                    value={seoTitle}
+                    onChange={(e) => {
+                      setSeoTitle(e.target.value);
+                      setMetaDirty(true);
+                    }}
+                    placeholder={name || "Page title"}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Meta description</Label>
+                  <Textarea
+                    value={seoDescription}
+                    onChange={(e) => {
+                      setSeoDescription(e.target.value);
+                      setMetaDirty(true);
+                    }}
+                    rows={2}
+                    className="resize-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Social image</Label>
+                  <ImageUpload
+                    value={ogImage}
+                    onChange={(v) => {
+                      setOgImage(v);
+                      setMetaDirty(true);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Canonical URL</Label>
+                  <Input
+                    type="url"
+                    value={canonical}
+                    onChange={(e) => {
+                      setCanonical(e.target.value);
+                      setMetaDirty(true);
+                    }}
+                    placeholder="https://"
+                  />
+                </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={noIndex}
+                    onChange={(e) => {
+                      setNoIndex(e.target.checked);
+                      setMetaDirty(true);
+                    }}
+                  />{" "}
+                  Hide from search engines
+                </label>
               </div>
               <div className="pt-2 border-t">
                 <Button
@@ -318,10 +458,17 @@ export default function CompanyPageEditor() {
                   variant={metaDirty ? "default" : "outline"}
                   className="w-full"
                 >
-                  {upsertCompany.isPending
-                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving…</>
-                    : <><Save className="mr-2 h-4 w-4" />Save Info</>
-                  }
+                  {upsertCompany.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving…
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Info
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -332,24 +479,52 @@ export default function CompanyPageEditor() {
             <div className="px-4 py-4 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  {draftStatus === "saving" && <Loader2 className="h-3 w-3 animate-spin" />}
+                  {draftStatus === "saving" && (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  )}
                   {draftStatusLabel[draftStatus]}
                 </span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {draftStatus !== "clean" && (
-                    <Button variant="ghost" size="sm" onClick={() => void handleDiscard()} disabled={discarding || publishing} className="h-7 text-xs text-destructive hover:text-destructive px-2">
-                      <Trash2 className="mr-1 h-3 w-3" />Discard
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => void handleDiscard()}
+                      disabled={discarding || publishing}
+                      className="h-7 text-xs text-destructive hover:text-destructive px-2"
+                    >
+                      <Trash2 className="mr-1 h-3 w-3" />
+                      Discard
                     </Button>
                   )}
-                  <Button size="sm" className="h-7 text-xs px-3" onClick={() => void handlePublish()} disabled={publishing || draftStatus === "clean"}>
-                    {publishing
-                      ? <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Publishing…</>
-                      : <><Send className="mr-1.5 h-3 w-3" />Publish</>
-                    }
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs px-3"
+                    onClick={() => void handlePublish()}
+                    disabled={publishing || draftStatus === "clean"}
+                  >
+                    {publishing ? (
+                      <>
+                        <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                        Publishing…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-1.5 h-3 w-3" />
+                        Publish
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
               <BlockEditor blocks={blocks} onChange={handleBlocksChange} />
+              <RevisionHistory
+                entityType="company"
+                entityId={String(companyId)}
+                onRestore={async () => {
+                  await refetch();
+                }}
+              />
             </div>
           )}
         </div>
@@ -379,20 +554,35 @@ export default function CompanyPageEditor() {
             className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
             aria-label={previewOpen ? "Collapse preview" : "Expand preview"}
           >
-            {previewOpen ? <PanelRightClose size={15} /> : <PanelRightOpen size={15} />}
+            {previewOpen ? (
+              <PanelRightClose size={15} />
+            ) : (
+              <PanelRightOpen size={15} />
+            )}
           </button>
 
           {previewOpen && (
             <>
               <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="font-mono text-xs text-muted-foreground truncate flex-1">{publicHref}</span>
+              <span className="font-mono text-xs text-muted-foreground truncate flex-1">
+                {publicHref}
+              </span>
               {draftStatus === "saved" && (
-                <Badge variant="secondary" className="text-xs shrink-0">draft</Badge>
+                <Badge variant="secondary" className="text-xs shrink-0">
+                  draft
+                </Badge>
               )}
               {draftStatus === "clean" && (
-                <Badge variant="outline" className="text-xs shrink-0">published</Badge>
+                <Badge variant="outline" className="text-xs shrink-0">
+                  published
+                </Badge>
               )}
-              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground shrink-0 px-2" onClick={() => setIframeKey((k) => k + 1)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-muted-foreground shrink-0 px-2"
+                onClick={() => setIframeKey((k) => k + 1)}
+              >
                 Refresh
               </Button>
             </>
@@ -400,8 +590,8 @@ export default function CompanyPageEditor() {
         </div>
 
         {/* iframe */}
-        {previewOpen && (
-          company ? (
+        {previewOpen &&
+          (company ? (
             <iframe
               key={iframeKey}
               src={publicHref}
@@ -412,8 +602,7 @@ export default function CompanyPageEditor() {
             <div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
               Loading…
             </div>
-          )
-        )}
+          ))}
       </div>
     </div>
   );

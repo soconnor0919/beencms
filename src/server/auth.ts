@@ -3,6 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
 import { auditLog } from "~/server/db/schema";
+import { env } from "~/env";
+import { sendAccountEmail } from "~/lib/email";
+import { twoFactor } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -12,27 +15,46 @@ export const auth = betterAuth({
       session: schema.session,
       account: schema.account,
       verification: schema.verification,
+      twoFactor: schema.twoFactor,
     },
   }),
   emailAndPassword: {
     enabled: true,
+    disableSignUp: true,
+    minPasswordLength: 12,
+    sendResetPassword: async ({ user, url }) => {
+      await sendAccountEmail({
+        to: user.email,
+        subject: "Reset your hadlockCMS password",
+        text: `Reset your password using this secure link:\n${url}\n\nThis link expires in one hour.`,
+        html: `<p>Reset your hadlockCMS password using the link below.</p><p><a href="${url}">Reset password</a></p><p>This link expires in one hour.</p>`,
+      });
+    },
   },
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  rateLimit: { enabled: true, window: 60, max: 20 },
+  session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
+  plugins: [twoFactor({ issuer: "hadlockCMS" })],
   databaseHooks: {
     session: {
       create: {
         after: async (session) => {
           // Find the user's email for the log entry
-          const u = db.select({ email: schema.user.email }).from(schema.user).where(
-            (await import("drizzle-orm")).eq(schema.user.id, session.userId)
-          ).get();
+          const u = db
+            .select({ email: schema.user.email })
+            .from(schema.user)
+            .where(
+              (await import("drizzle-orm")).eq(schema.user.id, session.userId),
+            )
+            .get();
           await db.insert(auditLog).values({
-            userId:    session.userId,
+            siteId: "platform",
+            userId: session.userId,
             userEmail: u?.email,
-            action:    "auth.login",
-            entity:    "session",
-            detail:    u?.email ? `Signed in as ${u.email}` : "Session created",
+            action: "auth.login",
+            entity: "session",
+            detail: u?.email ? `Signed in as ${u.email}` : "Session created",
           });
         },
       },

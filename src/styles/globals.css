@@ -6,8 +6,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    var(--font-body), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif:
+    var(--font-heading), ui-serif, Georgia, Cambria, "Times New Roman", serif;
 
   --color-olive: #8a7d55;
   --color-olive-dark: #6b6040;
@@ -62,23 +65,23 @@
   --radius: 0.75rem;
   /* Trellis palette mapped to shadcn tokens */
   --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.005 90);        /* charcoal #2c2c2c */
+  --foreground: oklch(0.18 0.005 90); /* charcoal #2c2c2c */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.005 90);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.005 90);
-  --primary: oklch(0.52 0.065 90);           /* olive #8a7d55 */
+  --primary: oklch(0.52 0.065 90); /* olive #8a7d55 */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0.018 80);         /* cream #f8f5ee */
+  --secondary: oklch(0.96 0.018 80); /* cream #f8f5ee */
   --secondary-foreground: oklch(0.18 0.005 90);
-  --muted: oklch(0.92 0.02 80);              /* stone #e8e0cc */
+  --muted: oklch(0.92 0.02 80); /* stone #e8e0cc */
   --muted-foreground: oklch(0.45 0.01 80);
   --accent: oklch(0.96 0.018 80);
   --accent-foreground: oklch(0.52 0.065 90);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.025 80);            /* stone border */
+  --border: oklch(0.88 0.025 80); /* stone border */
   --input: oklch(0.88 0.025 80);
-  --ring: oklch(0.52 0.065 90);              /* olive focus ring */
+  --ring: oklch(0.52 0.065 90); /* olive focus ring */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -95,6 +98,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -135,4 +139,83 @@
   body {
     @apply bg-background text-foreground;
   }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Public-site theme structures. Content blocks remain portable between themes. */
+[data-site-shell] [data-site-container] {
+  max-width: var(--site-content-width, 72rem);
+}
+[data-site-shell] main .max-w-6xl {
+  max-width: var(--site-content-width, 72rem);
+}
+
+[data-site-theme="editorial"] [data-site-header] {
+  position: relative;
+  border-bottom-width: 3px;
+  border-bottom-color: var(--primary);
+  backdrop-filter: none;
+}
+[data-site-theme="editorial"] [data-site-nav] {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+[data-site-theme="editorial"] [data-site-footer] {
+  border-top: 6px solid var(--primary);
+}
+
+[data-site-theme="studio"] [data-site-header] {
+  top: 0.75rem;
+  width: calc(100% - 1.5rem);
+  max-width: var(--site-content-width);
+  margin-inline: auto;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 12px 35px rgb(0 0 0 / 0.08);
+}
+[data-site-theme="studio"] [data-site-footer] {
+  margin: 0.75rem;
+  border-radius: var(--radius);
+}
+
+[data-site-theme="heritage"] [data-site-header] {
+  position: relative;
+  border-top: 4px solid var(--primary);
+  border-bottom: 1px double var(--primary);
+  backdrop-filter: none;
+}
+[data-site-theme="heritage"] [data-site-nav] {
+  font-family: var(--font-heading), ui-serif, serif;
+}
+[data-site-theme="heritage"] [data-site-footer] {
+  border-top: 4px double var(--primary);
+}
+
+[data-site-theme="sunrise"] [data-site-header] {
+  background: color-mix(in srgb, var(--accent) 82%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--primary) 28%, transparent);
+}
+[data-site-theme="sunrise"] [data-site-footer] {
+  background: color-mix(in srgb, var(--primary) 42%, #1f1712);
 }

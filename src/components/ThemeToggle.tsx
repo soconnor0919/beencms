@@ -1,21 +1,54 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Laptop, Moon, Sun } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+
+type AppearanceTheme = "light" | "dark" | "system";
+
+const OPTIONS: { value: AppearanceTheme; label: string; icon: typeof Sun }[] = [
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+  { value: "system", label: "System", icon: Laptop },
+];
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const isDark = resolvedTheme === "dark";
+  const selectedTheme: AppearanceTheme = mounted && OPTIONS.some((option) => option.value === theme)
+    ? theme as AppearanceTheme
+    : "system";
+  const TriggerIcon = mounted && resolvedTheme === "dark" ? Moon : mounted && resolvedTheme === "light" ? Sun : Laptop;
 
   return (
-    <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      suppressHydrationWarning
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-stone text-charcoal transition-colors hover:bg-stone dark:border-white/20 dark:text-white dark:hover:bg-white/10"
-    >
-      {isDark ? <Sun size={16} strokeWidth={1.75} /> : <Moon size={16} strokeWidth={1.75} />}
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="rounded-full" aria-label="Choose appearance theme" title={`Theme: ${selectedTheme}`} suppressHydrationWarning>
+          <TriggerIcon />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-36">
+        <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={selectedTheme} onValueChange={(value) => setTheme(value)}>
+          {OPTIONS.map((option) => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}>
+              <option.icon />
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

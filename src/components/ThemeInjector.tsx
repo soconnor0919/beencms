@@ -15,41 +15,110 @@ import { db } from "~/server/db";
 import { siteSettings } from "~/server/db/schema";
 import { defaultTheme } from "~/config/cms";
 import { buildThemeCSS } from "~/lib/theme";
+import {
+  getButtonRadius,
+  getCornerRadius,
+  getLayoutPreset,
+  getSectionSpacing,
+  getSiteTheme,
+  type ButtonStyleId,
+  type ContentAlignment,
+  type LayoutPresetId,
+  type SectionSpacingId,
+} from "~/config/themes";
+import { headers } from "next/headers";
+import { eq } from "drizzle-orm";
+import { resolvePublicSiteId } from "~/lib/sites";
 
 export async function ThemeInjector() {
+  const siteId = await resolvePublicSiteId(await headers());
   let primary = defaultTheme.primaryColor;
-  let accent  = defaultTheme.accentColor;
-  let text    = defaultTheme.textColor;
+  let accent = defaultTheme.accentColor;
+  let text = defaultTheme.textColor;
+  let bodyFont = "Source Sans 3";
+  let headingFont = "Georgia";
+  let themePreset = "trellis";
+  let cornerStyle = "rounded";
+  let contentAlignment: ContentAlignment = "left";
+  let layoutPreset: LayoutPresetId = "classic";
+  let sectionSpacing: SectionSpacingId = "balanced";
+  let buttonStyle: ButtonStyleId = "rounded";
 
   try {
-    const row = await db.select({
-      primaryColor: siteSettings.primaryColor,
-      accentColor:  siteSettings.accentColor,
-      textColor:    siteSettings.textColor,
-    }).from(siteSettings).get();
+    const row = await db
+      .select({
+        primaryColor: siteSettings.primaryColor,
+        accentColor: siteSettings.accentColor,
+        textColor: siteSettings.textColor,
+        bodyFont: siteSettings.bodyFont,
+        headingFont: siteSettings.headingFont,
+        themePreset: siteSettings.themePreset,
+        cornerStyle: siteSettings.cornerStyle,
+        contentAlignment: siteSettings.contentAlignment,
+        layoutPreset: siteSettings.layoutPreset,
+        sectionSpacing: siteSettings.sectionSpacing,
+        buttonStyle: siteSettings.buttonStyle,
+      })
+      .from(siteSettings)
+      .where(eq(siteSettings.siteId, siteId))
+      .get();
 
     if (row) {
       primary = row.primaryColor;
-      accent  = row.accentColor;
-      text    = row.textColor;
+      accent = row.accentColor;
+      text = row.textColor;
+      bodyFont = row.bodyFont;
+      headingFont = row.headingFont;
+      themePreset = row.themePreset;
+      cornerStyle = row.cornerStyle;
+      contentAlignment = row.contentAlignment;
+      layoutPreset = row.layoutPreset;
+      sectionSpacing = row.sectionSpacing;
+      buttonStyle = row.buttonStyle;
     }
   } catch {
     // DB not ready (e.g. build-time static generation) — use config defaults.
   }
 
-  // Only inject when the values differ from the hardcoded globals.css defaults,
-  // so we don't add a pointless style block on a fresh install.
-  if (
-    primary === defaultTheme.primaryColor &&
-    accent  === defaultTheme.accentColor  &&
-    text    === defaultTheme.textColor
-  ) {
-    return null;
-  }
-
-  const css = buildThemeCSS(primary, accent, text);
+  const preset = getSiteTheme(themePreset);
+  const layout = getLayoutPreset(layoutPreset);
+  const css = buildThemeCSS({
+    primaryColor: primary,
+    accentColor: accent,
+    textColor: text,
+    bodyFont,
+    headingFont,
+    radius: getCornerRadius(cornerStyle),
+    contentWidth: layout.contentWidth || preset.contentWidth,
+    contentAlignment,
+    sectionSpacing: getSectionSpacing(sectionSpacing),
+    buttonRadius: getButtonRadius(buttonStyle),
+  });
+  const systemFonts = new Set([
+    "Georgia",
+    "Arial",
+    "Verdana",
+    "Tahoma",
+    "Trebuchet MS",
+    "Times New Roman",
+  ]);
+  const fontFamilies = [
+    ...new Set(
+      [bodyFont, headingFont].filter(
+        (font) => !systemFonts.has(font) && /^[a-zA-Z0-9 ]{1,80}$/.test(font),
+      ),
+    ),
+  ];
+  const fontUrl = fontFamilies.length
+    ? `https://fonts.googleapis.com/css2?${fontFamilies.map((font) => `family=${encodeURIComponent(font)}:wght@400;500;600;700`).join("&")}&display=swap`
+    : null;
 
   // Values are validated as /^#[0-9a-fA-F]{6}$/ in the settings mutation,
   // so dangerouslySetInnerHTML is safe here.
-  return <style dangerouslySetInnerHTML={{ __html: css }} />;
+  return (
+    <>
+      {fontUrl ? <link rel="stylesheet" href={fontUrl} /> : null}
+      <style dangerouslySetInnerHTML={{ __html: css }} />
+    </>
+  );
 }

@@ -175,7 +175,7 @@ function SortableCompanyRow({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminCompaniesPage() {
-  const { data: companies, refetch, isLoading } = api.companies.getAll.useQuery();
+  const { data: companies, refetch, isLoading } = api.companies.getAllForEditor.useQuery();
   const upsert = api.companies.upsert.useMutation({
     onSuccess: async () => {
       await refetch();

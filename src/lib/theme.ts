@@ -47,19 +47,75 @@ export function contrastForeground(bg: string): string {
  * (`--primary`, `--primary-foreground`, `--accent`, `--accent-foreground`,
  * `--foreground`, `--ring`). The defaults in globals.css handle everything else.
  */
-export function buildThemeCSS(primaryColor: string, accentColor: string, textColor: string): string {
+function safeFont(value: string, fallback: string): string {
+  return /^[a-zA-Z0-9 ]{1,80}$/.test(value) ? `'${value}'` : fallback;
+}
+
+function mix(hexA: string, hexB: string, amount: number): string {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  const channel = (left: number, right: number) =>
+    Math.round(left + (right - left) * amount)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${channel(a.r, b.r)}${channel(a.g, b.g)}${channel(a.b, b.b)}`;
+}
+
+export function buildThemeCSS({
+  primaryColor,
+  accentColor,
+  textColor,
+  bodyFont,
+  headingFont,
+  radius,
+  contentWidth,
+  contentAlignment,
+  sectionSpacing,
+  buttonRadius,
+}: {
+  primaryColor: string;
+  accentColor: string;
+  textColor: string;
+  bodyFont: string;
+  headingFont: string;
+  radius: string;
+  contentWidth: string;
+  contentAlignment: "left" | "center" | "right";
+  sectionSpacing: string;
+  buttonRadius: string;
+}): string {
   const primary = isValidHex(primaryColor) ? primaryColor : "#8a7d55";
-  const accent  = isValidHex(accentColor)  ? accentColor  : "#f8f5ee";
-  const text    = isValidHex(textColor)    ? textColor    : "#2c2826";
+  const accent = isValidHex(accentColor) ? accentColor : "#f8f5ee";
+  const text = isValidHex(textColor) ? textColor : "#2c2826";
 
   return [
     `:root {`,
+    `  --radius: ${radius};`,
+    `  --font-body: ${safeFont(bodyFont, "ui-sans-serif")};`,
+    `  --font-heading: ${safeFont(headingFont, "ui-serif")};`,
+    `  --site-content-width: ${contentWidth};`,
+    `  --site-content-alignment: ${contentAlignment};`,
+    `  --section-spacing: ${sectionSpacing};`,
+    `  --button-radius: ${buttonRadius};`,
+    `  --color-olive: ${primary};`,
+    `  --color-olive-dark: ${mix(primary, "#000000", 0.22)};`,
+    `  --color-olive-light: ${mix(primary, "#ffffff", 0.32)};`,
+    `  --color-cream: ${accent};`,
+    `  --color-stone: ${mix(accent, primary, 0.12)};`,
+    `  --color-charcoal: ${text};`,
+    `}`,
+    `:root:not(.dark) {`,
     `  --primary: ${primary};`,
     `  --primary-foreground: ${contrastForeground(primary)};`,
     `  --accent: ${accent};`,
     `  --accent-foreground: ${contrastForeground(accent)};`,
     `  --foreground: ${text};`,
     `  --ring: ${primary};`,
+    `}`,
+    `.dark {`,
+    `  --primary: ${mix(primary, "#ffffff", 0.22)};`,
+    `  --primary-foreground: ${contrastForeground(mix(primary, "#ffffff", 0.22))};`,
+    `  --ring: ${mix(primary, "#ffffff", 0.22)};`,
     `}`,
   ].join("\n");
 }

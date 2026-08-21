@@ -33,6 +33,7 @@ const ACTION_LABELS: Record<string, string> = {
   "company.update":    "Updated program",
   "company.delete":    "Removed program",
   "settings.update":   "Updated site settings",
+  "onboarding.complete": "Completed site setup",
   "users.invite":      "Invited user",
   "users.updateRole":  "Changed user role",
   "users.delete":      "Removed user",
@@ -48,6 +49,7 @@ const ACTION_ICON_MAP: Record<string, React.ElementType> = {
   "company.update":   Briefcase,
   "company.delete":   Briefcase,
   "settings.update":  Settings,
+  "onboarding.complete": Settings,
   "users.invite":     UserCog,
   "users.updateRole": UserCog,
   "users.delete":     UserCog,
@@ -58,7 +60,7 @@ export default async function AdminDashboard() {
   const caller = createCaller(ctx);
 
   const [companies, teamData, messages, auditEntries] = await Promise.all([
-    caller.companies.getAll(),
+    caller.companies.getAllForEditor(),
     caller.team.getAll(),
     caller.contact.getAll(),
     caller.audit.getRecent({ limit: 25 }).catch(() => [] as Awaited<ReturnType<typeof caller.audit.getRecent>>),

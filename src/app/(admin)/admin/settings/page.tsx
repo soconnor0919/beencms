@@ -8,15 +8,24 @@ import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Separator } from "~/components/ui/separator";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Palette, Phone, Search, Image as ImageIcon, Link2, Globe } from "lucide-react";
+import { AlignCenter, AlignLeft, AlignRight, Check, Save, Plus, Trash2, Palette, Phone, Search, Image as ImageIcon, Link2, Globe, SwatchBook } from "lucide-react";
 import ImageUpload from "~/components/admin/ImageUpload";
 import { PageHeader } from "~/components/admin/PageHeader";
 import { PageContent } from "~/components/admin/PageContent";
 import { AdminTabs } from "~/components/admin/AdminTabs";
+import { Badge } from "~/components/ui/badge";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
+import { COLOR_PALETTES, CORNER_STYLES, FONT_PAIRS, SITE_THEMES, getCornerRadius, getCornerStyleForRadius, type ContentAlignment, type CornerStyleId, type SiteTheme, type SiteThemeId } from "~/config/themes";
+import { cn } from "~/lib/utils";
+import { ThemePreview } from "~/components/admin/ThemePreview";
+import Link from "next/link";
+import { Field as ThemeField, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "~/components/ui/field";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 type NavLink    = { label: string; href: string };
 type SocialLink = { platform: string; url: string };
-type Tab = "branding" | "nav" | "contact" | "seo";
+type Tab = "themes" | "branding" | "nav" | "contact" | "seo";
 
 // ── Font options ───────────────────────────────────────────────────────────────
 
@@ -92,6 +101,7 @@ function FontSelect({ label, hint, value, onChange, options }: {
 }
 
 const TABS = [
+  { id: "themes"   as Tab, label: "Themes",           icon: SwatchBook },
   { id: "branding" as Tab, label: "Branding",         icon: Palette },
   { id: "nav"      as Tab, label: "Navigation",       icon: Link2 },
   { id: "contact"  as Tab, label: "Contact & Social", icon: Phone },
@@ -128,6 +138,9 @@ export default function SettingsPage() {
   const [siteUrl,        setSiteUrl]        = useState("");
   const [logoUrl,        setLogoUrl]        = useState("");
   const [iconUrl,        setIconUrl]        = useState("");
+  const [themePreset,    setThemePreset]    = useState<SiteThemeId>("trellis");
+  const [cornerStyle,    setCornerStyle]    = useState<CornerStyleId>("rounded");
+  const [contentAlignment, setContentAlignment] = useState<ContentAlignment>("left");
   const [primaryColor,   setPrimaryColor]   = useState("#8a7d55");
   const [accentColor,    setAccentColor]    = useState("#f8f5ee");
   const [textColor,      setTextColor]      = useState("#2c2826");
@@ -142,7 +155,7 @@ export default function SettingsPage() {
   const [seoTitle,       setSeoTitle]       = useState("");
   const [seoDescription, setSeoDescription] = useState("");
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>("branding");
+  const [activeTab, setActiveTab] = useState<Tab>("themes");
 
   useEffect(() => {
     if (!data) return;
@@ -150,6 +163,9 @@ export default function SettingsPage() {
     setSiteUrl(data.siteUrl ?? "");
     setLogoUrl(data.logoUrl ?? "/logo.svg");
     setIconUrl(data.iconUrl ?? "/icon.svg");
+    setThemePreset(data.themePreset ?? "trellis");
+    setCornerStyle(data.cornerStyle ?? "rounded");
+    setContentAlignment(data.contentAlignment ?? "left");
     setPrimaryColor(data.primaryColor ?? "#8a7d55");
     setAccentColor(data.accentColor ?? "#f8f5ee");
     setTextColor((data as { textColor?: string }).textColor ?? "#2c2826");
@@ -184,7 +200,7 @@ export default function SettingsPage() {
     link.href = `https://fonts.googleapis.com/css2?${families}&display=swap`;
   }, [bodyFont, headingFont]);
 
-  const handleSave = async () => {
+  const handleSave = async (preset?: SiteTheme) => {
     setSaving(true);
     try {
       await updateMutation.mutateAsync({
@@ -192,11 +208,19 @@ export default function SettingsPage() {
         siteUrl:        siteUrl || null,
         logoUrl:        logoUrl || null,
         iconUrl:        iconUrl || null,
-        primaryColor,
-        accentColor,
-        textColor,
-        bodyFont,
-        headingFont,
+        themePreset:    preset?.id ?? themePreset,
+        cornerStyle:    preset ? getCornerStyleForRadius(preset.radius) : cornerStyle,
+        contentAlignment,
+        layoutPreset: data?.layoutPreset ?? "classic",
+        headerStyle: data?.headerStyle ?? "standard",
+        footerStyle: data?.footerStyle ?? "columns",
+        sectionSpacing: data?.sectionSpacing ?? "balanced",
+        buttonStyle: data?.buttonStyle ?? "rounded",
+        primaryColor:   preset?.primaryColor ?? primaryColor,
+        accentColor:    preset?.accentColor ?? accentColor,
+        textColor:      preset?.textColor ?? textColor,
+        bodyFont:       preset?.bodyFont ?? bodyFont,
+        headingFont:    preset?.headingFont ?? headingFont,
         navLinks:       JSON.stringify(navLinks),
         footerTagline:  footerTagline || null,
         contactEmail:   contactEmail || null,
@@ -206,13 +230,24 @@ export default function SettingsPage() {
         seoTitle:       seoTitle || null,
         seoDescription: seoDescription || null,
       });
-      toast.success("Settings saved");
+      toast.success(preset ? `${preset.name} theme activated` : "Settings saved");
       await refetch();
     } catch {
       toast.error("Failed to save settings");
     } finally {
       setSaving(false);
     }
+  };
+
+  const applyTheme = async (theme: SiteTheme) => {
+    setThemePreset(theme.id);
+    setPrimaryColor(theme.primaryColor);
+    setAccentColor(theme.accentColor);
+    setTextColor(theme.textColor);
+    setBodyFont(theme.bodyFont);
+    setHeadingFont(theme.headingFont);
+    setCornerStyle(getCornerStyleForRadius(theme.radius));
+    await handleSave(theme);
   };
 
   const saveButton = (
@@ -222,12 +257,66 @@ export default function SettingsPage() {
     </Button>
   );
 
+  const selectedTheme = SITE_THEMES.find((theme) => theme.id === themePreset) ?? SITE_THEMES[0]!;
+  const selectedPalette = COLOR_PALETTES.find((palette) => palette.primaryColor === primaryColor && palette.accentColor === accentColor && palette.textColor === textColor)?.id ?? "";
+  const selectedFontPair = FONT_PAIRS.find((pair) => pair.bodyFont === bodyFont && pair.headingFont === headingFont)?.id ?? "custom";
+
   return (
     <PageContent
       maxWidth="max-w-4xl"
       header={<PageHeader title="Site Settings" description="Configure branding, navigation, and metadata" actions={saveButton} />}
       tabs={<AdminTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >
+
+      {/* ── Themes ───────────────────────────────────────────────────────── */}
+      {activeTab === "themes" && (
+        <div className="flex flex-col gap-8">
+          <div>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div><h2 className="text-xl font-semibold">Choose a site theme</h2><p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">Themes change the public site’s typography, color system, spacing, corners, header, and footer without changing your content. You can fine-tune the result under Branding.</p></div>
+              <Button asChild variant="outline"><Link href="/admin/onboarding">Run site setup</Link></Button>
+            </div>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            {SITE_THEMES.map((theme) => {
+              const active = data?.themePreset === theme.id;
+              return <Card key={theme.id} className={cn("overflow-hidden transition-shadow", active && "ring-2 ring-primary")}>
+                <CardHeader>
+                  <CardTitle>{theme.name}</CardTitle>
+                  <CardDescription>{theme.description}</CardDescription>
+                  {active ? <CardAction><Badge><Check data-icon="inline-start" />Active</Badge></CardAction> : null}
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <ThemePreview theme={theme} />
+                  <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Best for:</span> {theme.bestFor}</p>
+                  <div className="flex items-center gap-2" aria-label={`${theme.name} colors`}>
+                    {[theme.primaryColor, theme.accentColor, theme.textColor].map((color) => <span key={color} className="size-5 rounded-full border" style={{ backgroundColor: color }} />)}
+                    <span className="ml-1 text-xs text-muted-foreground">{theme.headingFont} + {theme.bodyFont}</span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button aria-label={`${active ? "Reapply" : "Activate"} ${theme.name} theme`} className="w-full" variant={active ? "outline" : "default"} disabled={!data || saving} onClick={() => void applyTheme(theme)}>
+                    {active ? "Reapply theme" : "Activate theme"}
+                  </Button>
+                </CardFooter>
+              </Card>;
+            })}
+          </div>
+          <Card>
+            <CardHeader><CardTitle>Customize your active theme</CardTitle><CardDescription>Fine-tune the preset without changing any content. Save Settings applies these choices to the public site.</CardDescription></CardHeader>
+            <CardContent className="grid gap-8 lg:grid-cols-[1fr_0.85fr]">
+              <FieldGroup>
+                <FieldSet><FieldLegend>Color palette</FieldLegend><FieldDescription>Choose a coordinated primary, background, and text palette.</FieldDescription><ToggleGroup type="single" variant="outline" value={selectedPalette} onValueChange={(value) => { const palette = COLOR_PALETTES.find((item) => item.id === value); if (palette) { setPrimaryColor(palette.primaryColor); setAccentColor(palette.accentColor); setTextColor(palette.textColor); } }} className="flex w-full flex-wrap justify-start" spacing={2}>{COLOR_PALETTES.map((palette) => <ToggleGroupItem key={palette.id} value={palette.id} aria-label={`Use ${palette.name} colors`} className="gap-2"><span className="size-3 rounded-full" style={{ backgroundColor: palette.primaryColor }} />{palette.name}</ToggleGroupItem>)}</ToggleGroup></FieldSet>
+                <ThemeField><FieldLabel>Font pairing</FieldLabel><FieldDescription>Coordinated heading and body fonts.</FieldDescription><Select value={selectedFontPair} onValueChange={(value) => { const pair = FONT_PAIRS.find((item) => item.id === value); if (pair) { setBodyFont(pair.bodyFont); setHeadingFont(pair.headingFont); } }}><SelectTrigger className="w-full"><SelectValue placeholder="Choose fonts" /></SelectTrigger><SelectContent><SelectGroup>{selectedFontPair === "custom" ? <SelectItem value="custom" disabled>Custom — {headingFont} + {bodyFont}</SelectItem> : null}{FONT_PAIRS.map((pair) => <SelectItem key={pair.id} value={pair.id}>{pair.name} — {pair.headingFont} + {pair.bodyFont}</SelectItem>)}</SelectGroup></SelectContent></Select></ThemeField>
+                <FieldSet><FieldLegend>Corner style</FieldLegend><ToggleGroup type="single" variant="outline" value={cornerStyle} onValueChange={(value) => { if (value) setCornerStyle(value as CornerStyleId); }} className="flex w-full flex-wrap justify-start" spacing={2}>{CORNER_STYLES.map((style) => <ToggleGroupItem key={style.id} value={style.id} aria-label={`Use ${style.name} corners`}><span className="size-4 border-2 border-current" style={{ borderRadius: style.radius }} />{style.name}</ToggleGroupItem>)}</ToggleGroup></FieldSet>
+                <FieldSet><FieldLegend>Default alignment</FieldLegend><FieldDescription>Individual content blocks can still override the theme default.</FieldDescription><ToggleGroup type="single" variant="outline" value={contentAlignment} onValueChange={(value) => { if (value) setContentAlignment(value as ContentAlignment); }} spacing={0}><ToggleGroupItem value="left" aria-label="Align content left"><AlignLeft /> Left</ToggleGroupItem><ToggleGroupItem value="center" aria-label="Align content center"><AlignCenter /> Center</ToggleGroupItem><ToggleGroupItem value="right" aria-label="Align content right"><AlignRight /> Right</ToggleGroupItem></ToggleGroup></FieldSet>
+              </FieldGroup>
+              <div className="flex flex-col gap-3"><p className="text-sm font-medium">Live preview</p><ThemePreview theme={selectedTheme} primaryColor={primaryColor} accentColor={accentColor} textColor={textColor} bodyFont={bodyFont} headingFont={headingFont} radius={getCornerRadius(cornerStyle)} alignment={contentAlignment} /><p className="text-xs text-muted-foreground">{headingFont} headings · {bodyFont} body</p></div>
+            </CardContent>
+            <CardFooter className="justify-end">{saveButton}</CardFooter>
+          </Card>
+        </div>
+      )}
 
       {/* ── Branding ──────────────────────────────────────────────────────── */}
       {activeTab === "branding" && (

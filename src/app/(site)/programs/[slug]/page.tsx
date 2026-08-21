@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { headers } from "next/headers";
 import { createCaller } from "~/server/api/root";
@@ -10,26 +11,48 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const ctx = await createTRPCContext({ headers: await headers() });
+  const item = await createCaller(ctx).companies.getBySlug({ slug });
+  return item ? { title: item.seoTitle ?? item.name, description: item.seoDescription ?? item.description, alternates: item.canonical ? { canonical: item.canonical } : undefined, robots: item.noIndex ? { index: false, follow: false } : undefined, openGraph: { title: item.seoTitle ?? item.name, description: item.seoDescription ?? item.description ?? undefined, images: item.ogImage || item.imageUrl ? [item.ogImage ?? item.imageUrl!] : undefined } } : {};
+}
+
 export default async function ProgramDetailPage({ params }: Props) {
   const { slug } = await params;
   const ctx = await createTRPCContext({ headers: await headers() });
   const caller = createCaller(ctx);
   const { isEnabled: isDraft } = await draftMode();
 
-  const [company, pageData] = await Promise.all([
+  const [company, publishedPageData] = await Promise.all([
     caller.companies.getBySlug({ slug }),
     caller.companyPage.getBySlug({ slug }),
   ]);
 
-  if (!company) notFound();
+  if (!company) {
+    const moved = await caller.redirects.get({ fromPath: `/programs/${slug}` });
+    if (moved) redirect(moved.toPath);
+    notFound();
+  }
 
   // Resolve blocks from draft or live layout
   let blocks: Block[] = [];
   try {
-    const draft = (isDraft && pageData?.draftLayout)
-      ? JSON.parse(pageData.draftLayout) as Block[]
-      : null;
-    const live  = pageData?.layout ? JSON.parse(pageData.layout) as Block[] : [];
+    let pageData = publishedPageData;
+    let draftLayout: string | null = null;
+    if (isDraft) {
+      try {
+        const preview = await caller.companyPage.getDraftBySlug({ slug });
+        if (preview) {
+          pageData = preview;
+          draftLayout = preview.draftLayout;
+        }
+      } catch {
+        // A stale draft cookie without an editor session falls back to published content.
+      }
+    }
+    const draft = draftLayout ? JSON.parse(draftLayout) as Block[] : null;
+    const live = pageData?.layout ? JSON.parse(pageData.layout) as Block[] : [];
     blocks = draft ?? live;
   } catch {
     blocks = [];

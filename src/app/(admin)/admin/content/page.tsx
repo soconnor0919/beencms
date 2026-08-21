@@ -5,13 +5,14 @@ import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { toast } from "sonner";
-import { Globe, Loader2, Send, Trash2, PanelRightClose, PanelRightOpen } from "lucide-react";
+import { Globe, Loader2, Send, Trash2, PanelRightClose, PanelRightOpen, Copy } from "lucide-react";
 import BlockEditor from "~/components/admin/BlockEditor";
 import { AdminTabs } from "~/components/admin/AdminTabs";
 import { cn } from "~/lib/utils";
 import { PageHeader } from "~/components/admin/PageHeader";
 import { contentPages } from "~/config/cms";
 import type { Block } from "~/lib/blocks";
+import RevisionHistory from "~/components/admin/RevisionHistory";
 
 type PageDef = { page: string; label: string; href: string };
 
@@ -31,13 +32,14 @@ export default function AdminContentPage() {
   const [draftStatus, setDraftStatus] = useState<DraftStatus>("clean");
   const [iframeKey, setIframeKey] = useState(0);
 
-  const { data, refetch } = api.layout.getPage.useQuery(
+  const { data, refetch } = api.layout.getPageDraft.useQuery(
     { page: activePage },
     { refetchOnWindowFocus: false },
   );
   const saveDraftMutation = api.layout.saveDraft.useMutation();
   const publishMutation   = api.layout.publish.useMutation();
   const discardMutation   = api.layout.discard.useMutation();
+  const duplicateMutation = api.layout.duplicate.useMutation();
 
   useEffect(() => {
     void fetch("/api/draft/enter");
@@ -172,6 +174,7 @@ export default function AdminContentPage() {
           description="Edit blocks for each public page"
           actions={
             <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={async () => { const sourcePage = prompt(`Copy blocks from: ${PAGES.map((page) => page.page).join(", ")}`); if (!sourcePage || sourcePage === activePage || !PAGES.some((page) => page.page === sourcePage)) return; await duplicateMutation.mutateAsync({ sourcePage, targetPage: activePage }); await refetch(); toast.success("Page copied into a new draft"); }}><Copy className="mr-1.5 h-3.5 w-3.5" />Copy from…</Button>
               {draftStatus !== "clean" && (
                 <Button variant="ghost" size="sm" onClick={() => void handleDiscard()} disabled={discarding || publishing} className="text-destructive hover:text-destructive">
                   <Trash2 className="mr-1.5 h-3.5 w-3.5" />Discard
@@ -212,6 +215,7 @@ export default function AdminContentPage() {
           {/* Block editor */}
           <div className="flex-1 overflow-y-auto px-5 py-4">
             <BlockEditor blocks={blocks} onChange={handleBlocksChange} />
+            <div className="mt-4"><RevisionHistory entityType="page" entityId={activePage} onRestore={async () => { await refetch(); setIframeKey((key) => key + 1); }} /></div>
           </div>
         </div>
 

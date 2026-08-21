@@ -11,9 +11,11 @@
 
 export const cmsInfo = {
   /** The name of the CMS engine. Fork-invariant. */
-  name:    "beenCMS",
+  name:    "hadlockCMS",
+  /** Company responsible for the CMS engine. */
+  company: "Hadlock Technologies",
   /** Semantic version of the engine. Bump on breaking schema/API changes. */
-  version: "1.0.0",
+  version: "1.1.0",
 };
 
 // ── Content pages available in the Page Content editor ────────────────────────
@@ -42,8 +44,10 @@ export interface CmsFeatures {
   team: boolean;
   /** /admin/messages route + Messages nav item. */
   messages: boolean;
-  /** /admin/posts routes + Blog nav item + public /blog pages. */
+  /** /admin/posts routes + News & Articles nav item + public /blog pages. */
   blog: boolean;
+  /** /admin/calendar + public /events and iCalendar feed. */
+  calendar: boolean;
 }
 
 export const features: CmsFeatures = {
@@ -51,6 +55,7 @@ export const features: CmsFeatures = {
   team:     true,
   messages: true,
   blog:     true,
+  calendar: true,
 };
 
 // ── Default theme — overridden at runtime by site_settings.primaryColor etc. ──

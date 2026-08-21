@@ -7,23 +7,30 @@ import { useRouter } from "next/navigation";
 import AdminNav from "./AdminNav";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { Separator } from "~/components/ui/separator";
-import Logo from "~/components/Logo";
+import { CmsBrand } from "~/components/CmsBrand";
 import { signOut } from "~/lib/auth-client";
 import { cn } from "~/lib/utils";
-import { appDefaults } from "~/config/cms";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { SiteSwitcher } from "./SiteSwitcher";
 
 interface AdminShellProps {
   children: React.ReactNode;
   userEmail: string;
+  sites: Array<{ id: string; name: string; role: string }>;
+  activeSiteId: string;
 }
 
-export default function AdminShell({ children, userEmail }: AdminShellProps) {
+export default function AdminShell({
+  children,
+  userEmail,
+  sites,
+  activeSiteId,
+}: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
 
@@ -49,30 +56,28 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen overflow-hidden bg-muted/30">
-
+        <a
+          href="#admin-main-content"
+          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-md bg-background px-4 py-2 font-medium shadow-lg transition-transform focus:translate-y-0"
+        >
+          Skip to Content
+        </a>
         {/* ── Sidebar ── */}
-        <aside className={cn(
-          "relative shrink-0 border-r bg-card flex flex-col h-full transition-[width] duration-200",
-          collapsed ? "w-14" : "w-56",
-        )}>
-
+        <aside
+          className={cn(
+            "relative shrink-0 border-r bg-card flex flex-col h-full transition-[width] duration-200",
+            collapsed ? "w-14" : "w-56",
+          )}
+        >
           {/* Header: logo + collapse chevron */}
-          <div className={cn(
-            "flex items-center shrink-0 pt-5 pb-3",
-            collapsed ? "justify-center px-0" : "px-4 justify-between",
-          )}>
+          <div
+            className={cn(
+              "flex items-center shrink-0 pt-5 pb-3",
+              collapsed ? "justify-center px-0" : "px-4 justify-between",
+            )}
+          >
             <Link href="/" className="flex items-center shrink-0">
-              {collapsed ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src="/icon.svg" alt={appDefaults.name} width={26} height={26} />
-              ) : (
-                <div className="flex flex-col gap-0.5">
-                  <Logo width={120} />
-                  <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/50 pl-0.5">
-                    Admin Panel
-                  </span>
-                </div>
-              )}
+              {collapsed ? <CmsBrand compact /> : <CmsBrand showCompany />}
             </Link>
 
             {!collapsed && (
@@ -87,6 +92,14 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
           </div>
 
           <Separator />
+
+          {!collapsed ? (
+            <div className="px-3 py-3">
+              <SiteSwitcher sites={sites} activeSiteId={activeSiteId} />
+            </div>
+          ) : null}
+
+          {!collapsed ? <Separator /> : null}
 
           {/* Nav — fills available space */}
           <nav className="flex-1 overflow-y-auto px-2 py-3">
@@ -113,9 +126,11 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="mt-0.5"><ThemeToggle /></div>
+                  <div className="mt-0.5">
+                    <ThemeToggle />
+                  </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">Toggle theme</TooltipContent>
+                <TooltipContent side="right">Choose theme</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -123,6 +138,7 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
                   <Link
                     href="/"
                     target="_blank"
+                    aria-label="View public site in a new tab"
                     className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   >
                     <ExternalLink size={14} />
@@ -135,6 +151,7 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleSignOut}
+                    aria-label="Sign out"
                     className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-destructive transition-colors"
                   >
                     <LogOut size={14} />
@@ -151,7 +168,9 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-xs font-semibold select-none">
                   {initial}
                 </div>
-                <span className="flex-1 min-w-0 text-xs text-muted-foreground truncate">{userEmail}</span>
+                <span className="flex-1 min-w-0 text-xs text-muted-foreground truncate">
+                  {userEmail}
+                </span>
                 <ThemeToggle />
               </div>
 
@@ -175,12 +194,10 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
           )}
 
           {/* Clickable border strip — drag the edge to toggle */}
-          <div
+          <button
+            type="button"
             onClick={toggle}
-            role="button"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && toggle()}
             className="absolute inset-y-0 right-0 w-1 cursor-col-resize hover:bg-primary/25 transition-colors z-10"
           />
 
@@ -197,10 +214,13 @@ export default function AdminShell({ children, userEmail }: AdminShellProps) {
         </aside>
 
         {/* Main content — scrolls independently */}
-        <main className="flex-1 min-w-0 h-full overflow-hidden flex flex-col">
+        <main
+          id="admin-main-content"
+          tabIndex={-1}
+          className="flex-1 min-w-0 h-full overflow-hidden flex flex-col"
+        >
           {children}
         </main>
-
       </div>
     </TooltipProvider>
   );

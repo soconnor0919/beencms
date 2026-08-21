@@ -1,0 +1,1 @@
+ALTER TABLE `trellis_site_subscription` ADD `lastStripeEventAt` integer;

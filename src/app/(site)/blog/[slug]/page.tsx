@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -6,26 +7,81 @@ import { createCaller } from "~/server/api/root";
 import { createTRPCContext } from "~/server/api/trpc";
 import BlockRenderer from "~/components/BlockRenderer";
 import type { Block } from "~/lib/blocks";
+import { verifyPreviewToken } from "~/lib/preview-token";
+import { db } from "~/server/db";
+import { post as postTable } from "~/server/db/schema";
+import { and, eq } from "drizzle-orm";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const ctx = await createTRPCContext({ headers: await headers() });
+  const item = await createCaller(ctx).posts.getBySlug({ slug });
+  return item
+    ? {
+        title: item.seoTitle ?? item.title,
+        description: item.seoDescription ?? item.excerpt,
+        alternates: item.canonical ? { canonical: item.canonical } : undefined,
+        robots: item.noIndex ? { index: false, follow: false } : undefined,
+        openGraph: {
+          type: "article",
+          title: item.seoTitle ?? item.title,
+          description: item.seoDescription ?? item.excerpt ?? undefined,
+          images:
+            item.ogImage || item.coverImage
+              ? [item.ogImage ?? item.coverImage!]
+              : undefined,
+        },
+      }
+    : {};
+}
+
+export default async function BlogPostPage({ params, searchParams }: Props) {
+  const { slug } = await params;
+  const { preview: previewToken } = await searchParams;
   const ctx = await createTRPCContext({ headers: await headers() });
   const caller = createCaller(ctx);
   const { isEnabled: isDraft } = await draftMode();
 
-  const post = await caller.posts.getBySlug({ slug });
+  const publishedPost = await caller.posts.getBySlug({ slug });
+  let previewPost: Awaited<ReturnType<typeof caller.posts.getDraftBySlug>> =
+    null;
+  if (isDraft) {
+    try {
+      previewPost = await caller.posts.getDraftBySlug({ slug });
+    } catch {
+      // A stale draft cookie without an editor session falls back to published content.
+    }
+  }
+  if (
+    !previewPost &&
+    verifyPreviewToken(previewToken, `${ctx.siteId}:post:${slug}`)
+  ) {
+    previewPost =
+      db
+        .select()
+        .from(postTable)
+        .where(and(eq(postTable.siteId, ctx.siteId), eq(postTable.slug, slug)))
+        .get() ?? null;
+  }
+  const post = previewPost ?? publishedPost;
 
-  if (!post) notFound();
-  if (post.status !== "published" && !isDraft) notFound();
+  if (!post) {
+    const moved = await caller.redirects.get({ fromPath: `/blog/${slug}` });
+    if (moved) redirect(moved.toPath);
+    notFound();
+  }
 
   let blocks: Block[] = [];
   try {
-    const draft = (isDraft && post.draftLayout) ? JSON.parse(post.draftLayout) as Block[] : null;
-    const live  = post.layout ? JSON.parse(post.layout) as Block[] : [];
+    const draft = previewPost?.draftLayout
+      ? (JSON.parse(previewPost.draftLayout) as Block[])
+      : null;
+    const live = post.layout ? (JSON.parse(post.layout) as Block[]) : [];
     blocks = draft ?? live;
   } catch {
     blocks = [];
@@ -34,6 +90,21 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <>
       {/* Post hero */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": post.kind === "news" ? "NewsArticle" : "Article",
+            headline: post.title,
+            datePublished: post.publishedAt,
+            image: post.coverImage,
+            author: post.byline
+              ? { "@type": "Person", name: post.byline }
+              : undefined,
+          }).replace(/</g, "\\u003c"),
+        }}
+      />
       <section className="bg-cream dark:bg-muted px-6 py-20">
         <div className="mx-auto max-w-3xl">
           {post.category && (
@@ -55,14 +126,25 @@ export default async function BlogPostPage({ params }: Props) {
           <h1 className="font-serif text-4xl font-bold text-charcoal dark:text-foreground md:text-5xl">
             {post.title}
           </h1>
+          <span className="mt-4 inline-block rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+            {post.kind}
+          </span>
           {post.excerpt && (
             <p className="mt-4 text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
               {post.excerpt}
             </p>
           )}
-          {post.publishedAt && (
+          {(post.byline || post.publishedAt) && (
             <p className="mt-4 text-sm text-muted-foreground">
-              {new Date(post.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              {post.byline ? `By ${post.byline}` : null}
+              {post.byline && post.publishedAt ? " · " : null}
+              {post.publishedAt
+                ? new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : null}
             </p>
           )}
         </div>
@@ -93,6 +175,19 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      {post.sourceUrl ? (
+        <div className="mx-auto max-w-3xl px-6 pb-10">
+          <a
+            href={post.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Read the original source →
+          </a>
+        </div>
+      ) : null}
 
       {/* Back to blog */}
       <section className="px-6 pb-20">

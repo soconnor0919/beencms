@@ -10,10 +10,11 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Skeleton } from "~/components/ui/skeleton";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Loader2, Copy } from "lucide-react";
 
-const STATUS_VARIANTS: Record<"draft" | "published", "secondary" | "default"> = {
+const STATUS_VARIANTS: Record<"draft" | "scheduled" | "published", "secondary" | "outline" | "default"> = {
   draft:     "secondary",
+  scheduled: "outline",
   published: "default",
 };
 
@@ -40,7 +41,7 @@ function ListSkeleton() {
 
 export default function AdminPostsPage() {
   const router = useRouter();
-  const { data: posts, refetch, isLoading } = api.posts.getAll.useQuery({ status: "all" });
+  const { data: posts, refetch, isLoading } = api.posts.getAllForEditor.useQuery();
   const upsert = api.posts.upsert.useMutation();
   const del    = api.posts.delete.useMutation({
     onSuccess: async () => {
@@ -49,6 +50,7 @@ export default function AdminPostsPage() {
     },
     onError: (e) => toast.error(e.message ?? "Failed to delete"),
   });
+  const duplicate = api.posts.duplicate.useMutation({ onSuccess: ({ id }) => router.push(`/admin/posts/${id}`), onError: (e) => toast.error(e.message) });
 
   const [creating, setCreating] = useState(false);
 
@@ -76,13 +78,13 @@ export default function AdminPostsPage() {
   return (
     <PageContent header={
       <PageHeader
-        title="Blog"
-        description="Write and publish posts visible on the public blog."
+        title="News & Articles"
+        description="Publish timely news updates and longer-form articles."
         actions={
           <Button onClick={() => void handleNew()} disabled={creating}>
             {creating
               ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating…</>
-              : <><Plus className="mr-2 h-4 w-4" />New Post</>
+              : <><Plus className="mr-2 h-4 w-4" />New story</>
             }
           </Button>
         }
@@ -102,6 +104,7 @@ export default function AdminPostsPage() {
               <tr className="border-b bg-muted/30">
                 <th className="px-5 py-3 text-left text-xs font-medium text-muted-foreground">Title</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Category</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-muted-foreground">Type</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-muted-foreground hidden md:table-cell">Published</th>
                 <th className="px-5 py-3" />
@@ -117,14 +120,15 @@ export default function AdminPostsPage() {
                   <td className="px-5 py-3.5 text-muted-foreground hidden sm:table-cell">
                     {p.category ?? <span className="text-muted-foreground/40">—</span>}
                   </td>
+                  <td className="px-5 py-3.5"><Badge variant="outline">{p.kind}</Badge></td>
                   <td className="px-5 py-3.5">
-                    <Badge variant={STATUS_VARIANTS[p.status as "draft" | "published"]}>
+                    <Badge variant={STATUS_VARIANTS[p.status]}>
                       {p.status}
                     </Badge>
                   </td>
                   <td className="px-5 py-3.5 text-xs text-muted-foreground tabular-nums hidden md:table-cell">
-                    {p.publishedAt
-                      ? new Date(p.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                    {(p.publishedAt ?? p.scheduledAt)
+                      ? new Date((p.publishedAt ?? p.scheduledAt)!).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                       : <span className="text-muted-foreground/40">—</span>
                     }
                   </td>
@@ -148,6 +152,7 @@ export default function AdminPostsPage() {
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Link>
+                      <button onClick={() => duplicate.mutate({ id: p.id })} className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground" title="Duplicate"><Copy className="h-3.5 w-3.5" /></button>
                       <button
                         onClick={() => handleDelete(p.id, p.title)}
                         disabled={del.isPending}

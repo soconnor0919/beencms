@@ -20,10 +20,10 @@ function PostCardSkeleton() {
   );
 }
 
-async function PostGrid() {
+async function PostGrid({ kind }: { kind?: "news" | "article" }) {
   const ctx = await createTRPCContext({ headers: await headers() });
   const caller = createCaller(ctx);
-  const posts = await caller.posts.getAll({ status: "published" });
+  const posts = await caller.posts.getAll({ kind });
 
   if (posts.length === 0) {
     return (
@@ -62,11 +62,11 @@ async function PostGrid() {
                 </div>
               )}
               <div className="p-6">
-                {post.category && (
+                <div className="flex items-center gap-2"><span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">{post.kind}</span>{post.category && (
                   <span className="text-xs font-semibold uppercase tracking-widest text-olive">
                     {post.category}
                   </span>
-                )}
+                )}</div>
                 <h2 className="mt-1.5 font-serif text-lg font-bold text-charcoal dark:text-foreground group-hover:text-olive dark:group-hover:text-olive-light transition-colors line-clamp-2">
                   {post.title}
                 </h2>
@@ -80,6 +80,7 @@ async function PostGrid() {
                     {new Date(post.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                   </p>
                 )}
+                {post.byline ? <p className="mt-1 text-xs text-muted-foreground">By {post.byline}</p> : null}
               </div>
             </Link>
           ))}
@@ -89,15 +90,18 @@ async function PostGrid() {
   );
 }
 
-export default function BlogPage() {
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const requested = (await searchParams).type;
+  const kind = requested === "news" || requested === "article" ? requested : undefined;
   return (
     <>
       <section className="bg-cream dark:bg-muted px-6 py-24 text-center">
         <div className="mx-auto max-w-2xl">
-          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">Blog</h1>
+          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">News & Articles</h1>
           <p className="mt-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
             Stories, updates, and insights from Trellis.
           </p>
+          <nav aria-label="Filter stories" className="mt-7 flex justify-center gap-2">{([['All', '/blog'], ['News', '/blog?type=news'], ['Articles', '/blog?type=article']] as const).map(([label, href]) => <Link key={href} href={href} className={`rounded-full border px-4 py-2 text-sm font-medium ${(!kind && label === "All") || kind === label.toLowerCase().replace(/s$/, "") ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`}>{label}</Link>)}</nav>
         </div>
       </section>
 
@@ -110,7 +114,7 @@ export default function BlogPage() {
           </div>
         </section>
       }>
-        <PostGrid />
+        <PostGrid kind={kind} />
       </Suspense>
     </>
   );

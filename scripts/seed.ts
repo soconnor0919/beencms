@@ -351,11 +351,30 @@ if (adminUser) {
   console.log("Admin user not found, skipping profile seed.");
 }
 
+// ─── Default multi-site workspace ────────────────────────────────────────────
+const defaultSite = db.select().from(schema.cmsSite).where(eq(schema.cmsSite.id, "default")).get();
+if (!defaultSite) {
+  db.insert(schema.cmsSite).values({ id: "default", name: "Trellis Workforce Development", slug: "default", locale: "en-US", timezone: "America/New_York" }).run();
+  console.log("✓ Default site workspace seeded");
+}
+if (adminUser) {
+  db.insert(schema.siteMembership).values({ siteId: "default", userId: adminUser.id, role: "owner" }).onConflictDoNothing().run();
+}
+db.insert(schema.siteSubscription)
+  .values({ siteId: "default", plan: "free", status: "none" })
+  .onConflictDoNothing()
+  .run();
+db.insert(schema.analyticsSettings)
+  .values({ siteId: "default", enabled: true, retentionDays: 90 })
+  .onConflictDoNothing()
+  .run();
+
 // ─── Default site settings ────────────────────────────────────────────────────
 const existingSettings = db.select().from(schema.siteSettings).get();
 if (!existingSettings) {
   db.insert(schema.siteSettings).values({
     siteName:      "Trellis Workforce Development",
+    themePreset:   "trellis",
     primaryColor:  "#8a7d55",
     accentColor:   "#f8f5ee",
     bodyFont:      "Source Sans 3",

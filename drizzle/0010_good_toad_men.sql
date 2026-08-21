@@ -1,0 +1,2 @@
+ALTER TABLE `trellis_account` ADD `issuer` text DEFAULT 'local:credential' NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX `account_issuer_account_idx` ON `trellis_account` (`issuer`,`accountId`);

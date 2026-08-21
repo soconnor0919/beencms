@@ -11,7 +11,7 @@ const globalForDb = globalThis as unknown as {
   sqlite: Database.Database | undefined;
 };
 
-const sqlite = globalForDb.sqlite ?? new Database(DB_PATH);
+export const sqlite = globalForDb.sqlite ?? new Database(DB_PATH);
 if (process.env.NODE_ENV !== "production") globalForDb.sqlite = sqlite;
 
 export const db = drizzle(sqlite, { schema });
