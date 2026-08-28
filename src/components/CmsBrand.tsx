@@ -7,30 +7,77 @@ interface CmsBrandProps {
   className?: string;
 }
 
-export function CmsBrand({ compact = false, showCompany = false, className }: CmsBrandProps) {
-  return (
-    <span className={cn("inline-flex items-center gap-2.5", className)} aria-label={cmsInfo.name}>
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 36 36"
-        className={cn("shrink-0", compact ? "size-7" : "size-9")}
+export function CmsBrand({
+  compact = false,
+  showCompany = false,
+  className,
+}: CmsBrandProps) {
+  if (compact) {
+    return (
+      <span
+        className={cn("inline-flex items-center", className)}
+        aria-label={cmsInfo.name}
       >
-        <rect width="36" height="36" rx="10" fill="#0b1f3a" />
-        <path d="M10 9v18M26 9v18" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
-        <path d="M11.5 21.5 24.5 14.5" stroke="#4f8cff" strokeWidth="4" strokeLinecap="round" />
-      </svg>
+        {/* The blue and white marks are the canonical Hadlock Technologies assets. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/branding/hadlock/icon-blue.svg"
+          alt=""
+          className="size-8 dark:hidden"
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/branding/hadlock/icon-white.svg"
+          alt=""
+          className="hidden size-8 dark:block"
+        />
+      </span>
+    );
+  }
 
-      {compact ? null : (
-        <span className="flex min-w-0 flex-col text-left leading-none">
-          <span className="whitespace-nowrap text-[17px] font-bold tracking-[-0.035em] text-[#0b1f3a] dark:text-white">
-            hadlock<span className="text-[#377cf6]">CMS</span>
+  return (
+    <span
+      className={cn("inline-flex min-w-0 items-center gap-2.5", className)}
+      aria-label={`${cmsInfo.name} by ${cmsInfo.company}`}
+    >
+      {showCompany ? (
+        <>
+          <span className="relative block h-7 w-[121px] shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/branding/hadlock/logo-blue.svg"
+              alt=""
+              className="h-7 w-[121px] object-contain dark:hidden"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/branding/hadlock/logo-white.svg"
+              alt=""
+              className="hidden h-7 w-[121px] object-contain dark:block"
+            />
           </span>
-          {showCompany ? (
-            <span className="mt-1 whitespace-nowrap text-[8px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              by Hadlock Technologies
-            </span>
-          ) : null}
-        </span>
+          <span className="rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-display text-[10px] font-bold tracking-[0.16em] text-primary">
+            CMS
+          </span>
+        </>
+      ) : (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/branding/hadlock/icon-blue.svg"
+            alt=""
+            className="size-8 dark:hidden"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/branding/hadlock/icon-white.svg"
+            alt=""
+            className="hidden size-8 dark:block"
+          />
+          <span className="whitespace-nowrap font-display text-lg font-bold tracking-tight text-foreground">
+            hadlock<span className="text-primary">CMS</span>
+          </span>
+        </>
       )}
     </span>
   );

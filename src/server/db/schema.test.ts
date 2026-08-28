@@ -1,4 +1,4 @@
-import { getTableColumns } from "drizzle-orm";
+import { getTableColumns, getTableName } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import {
   auditLog,
@@ -65,6 +65,11 @@ const siteOwnedTables = [
 ];
 
 describe("multi-site schema boundaries", () => {
+  it("uses a platform namespace instead of a client namespace", () => {
+    for (const table of siteOwnedTables)
+      expect(getTableName(table)).toMatch(/^hadlock_/);
+  });
+
   it("requires every site-owned root record to carry a site id", () => {
     for (const table of siteOwnedTables)
       expect(getTableColumns(table)).toHaveProperty("siteId");

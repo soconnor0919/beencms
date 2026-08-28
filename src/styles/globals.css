@@ -7,8 +7,13 @@
 
 @theme {
   --font-sans:
-    var(--font-body), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display:
+    var(--font-rajdhani), "Helvetica Neue", Helvetica, Arial, ui-sans-serif,
+    system-ui, sans-serif;
   --font-serif:
     var(--font-heading), ui-serif, Georgia, Cambria, "Times New Roman", serif;
 
@@ -63,7 +68,7 @@
 
 :root {
   --radius: 0.75rem;
-  /* Trellis palette mapped to shadcn tokens */
+  /* Neutral public-site fallback palette mapped to shadcn tokens */
   --background: oklch(1 0 0);
   --foreground: oklch(0.18 0.005 90); /* charcoal #2c2c2c */
   --card: oklch(1 0 0);
@@ -132,12 +137,97 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*
+ * hadlockCMS product identity. Site themes continue to own their public-facing
+ * tokens; admin, authentication, and onboarding use the canonical Hadlock
+ * Technologies palette and typography regardless of the active site.
+ */
+[data-platform-shell] {
+  --background: #f4f1ea;
+  --foreground: #171716;
+  --card: #fffefa;
+  --card-foreground: #171716;
+  --popover: #fffefa;
+  --popover-foreground: #171716;
+  --primary: #0076a0;
+  --primary-foreground: #ffffff;
+  --secondary: #efece2;
+  --secondary-foreground: #171716;
+  --muted: #e5e0d5;
+  --muted-foreground: #6b675e;
+  --accent: #e1f1f6;
+  --accent-foreground: #006082;
+  --border: #d9d3c6;
+  --input: #d9d3c6;
+  --ring: #0076a0;
+  --chart-1: #0076a0;
+  --chart-2: #0a8fc0;
+  --chart-3: #3f3d37;
+  --chart-4: #8a867b;
+  --chart-5: #c9c3b7;
+  --sidebar: #fffefa;
+  --sidebar-foreground: #171716;
+  --sidebar-primary: #0076a0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e1f1f6;
+  --sidebar-accent-foreground: #006082;
+  --sidebar-border: #d9d3c6;
+  --sidebar-ring: #0076a0;
+  font-family:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark [data-platform-shell] {
+  --background: #060a10;
+  --foreground: #ffffff;
+  --card: #0a1019;
+  --card-foreground: #ffffff;
+  --popover: #0a1019;
+  --popover-foreground: #ffffff;
+  --primary: #178dbf;
+  --primary-foreground: #ffffff;
+  --secondary: #0e1521;
+  --secondary-foreground: #ffffff;
+  --muted: #0e1521;
+  --muted-foreground: #94a3b8;
+  --accent: #102c3a;
+  --accent-foreground: #3aa8d4;
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 15%);
+  --ring: #178dbf;
+  --chart-1: #178dbf;
+  --chart-2: #3aa8d4;
+  --chart-3: #cbd5e1;
+  --chart-4: #64748b;
+  --chart-5: #334155;
+  --sidebar: #0a1019;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #178dbf;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #102c3a;
+  --sidebar-accent-foreground: #3aa8d4;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #178dbf;
+}
+
+[data-platform-shell] :is(h1, h2, h3) {
+  font-family:
+    var(--font-rajdhani), "Helvetica Neue", Helvetica, Arial, ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+[data-site-shell] {
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-family:
+      var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   }
   button,
   a,

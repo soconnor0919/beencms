@@ -15,7 +15,7 @@ import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: `Site setup | ${cmsInfo.name}`,
-  icons: { icon: "/hadlockcms-icon.svg" },
+  icons: { icon: "/branding/hadlock/icon-blue.svg" },
   robots: { index: false, follow: false },
 };
 
@@ -52,5 +52,5 @@ export default async function OnboardingLayout({
   }
   if (!["owner", "admin"].includes(membership.role)) redirect("/admin");
 
-  return children;
+  return <div data-platform-shell>{children}</div>;
 }

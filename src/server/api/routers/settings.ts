@@ -22,11 +22,11 @@ export const settingsRouter = createTRPCRouter({
       return {
         id: 0,
         siteId: ctx.siteId,
-        siteName: "Trellis Workforce Development",
+        siteName: "New Site",
         siteUrl: null,
-        logoUrl: "/logo.svg",
-        iconUrl: "/icon.svg",
-        themePreset: "trellis" as const,
+        logoUrl: null,
+        iconUrl: null,
+        themePreset: "foundation" as const,
         cornerStyle: "rounded" as const,
         contentAlignment: "left" as const,
         layoutPreset: "classic" as const,
@@ -35,11 +35,11 @@ export const settingsRouter = createTRPCRouter({
         sectionSpacing: "balanced" as const,
         buttonStyle: "rounded" as const,
         onboardingComplete: false,
-        primaryColor: "#8a7d55",
-        accentColor: "#f8f5ee",
-        textColor: "#2c2826",
-        bodyFont: "Source Sans 3",
-        headingFont: "Georgia",
+        primaryColor: "#0076a0",
+        accentColor: "#f4f1ea",
+        textColor: "#171716",
+        bodyFont: "Geist",
+        headingFont: "Rajdhani",
         navLinks: "[]",
         footerTagline: null,
         contactEmail: null,
@@ -63,7 +63,7 @@ export const settingsRouter = createTRPCRouter({
         iconUrl: z.string().nullish(),
         themePreset: z
           .enum([
-            "trellis",
+            "foundation",
             "editorial",
             "studio",
             "heritage",
@@ -71,7 +71,7 @@ export const settingsRouter = createTRPCRouter({
             "noir",
             "signal",
           ])
-          .default("trellis"),
+          .default("foundation"),
         cornerStyle: z
           .enum(["square", "subtle", "rounded", "playful"])
           .default("rounded"),
@@ -144,7 +144,7 @@ export const settingsRouter = createTRPCRouter({
         siteUrl: z.string().url().nullish().or(z.literal("")),
         footerTagline: z.string().max(500).nullish(),
         themePreset: z.enum([
-          "trellis",
+          "foundation",
           "editorial",
           "studio",
           "heritage",

@@ -144,7 +144,7 @@ export default function OnboardingPage() {
   const [siteName, setSiteName] = useState("");
   const [siteUrl, setSiteUrl] = useState("");
   const [tagline, setTagline] = useState("");
-  const [theme, setTheme] = useState<SiteThemeId>("trellis");
+  const [theme, setTheme] = useState<SiteThemeId>("foundation");
   const [layoutPreset, setLayoutPreset] = useState<LayoutPresetId>("classic");
   const [primaryColor, setPrimaryColor] = useState(
     SITE_THEMES[0]!.primaryColor,
@@ -169,7 +169,7 @@ export default function OnboardingPage() {
     setSiteName(data.siteName ?? "");
     setSiteUrl(data.siteUrl ?? "");
     setTagline(data.footerTagline ?? "");
-    setTheme(data.themePreset ?? "trellis");
+    setTheme(data.themePreset ?? "foundation");
     setLayoutPreset(data.layoutPreset ?? "classic");
     setPrimaryColor(data.primaryColor);
     setAccentColor(data.accentColor);

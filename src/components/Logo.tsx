@@ -15,7 +15,17 @@ export default function Logo({
   src: customSrc,
   alt = appDefaults.name,
 }: LogoProps) {
-  const src = customSrc || (variant === "icon" ? "/icon.svg" : "/logo.svg");
+  if (!customSrc) {
+    return (
+      <span
+        className={`inline-flex truncate font-display font-semibold text-foreground ${className}`}
+        style={{ maxWidth: width }}
+      >
+        {alt}
+      </span>
+    );
+  }
+  const src = customSrc;
   const height = Math.round(
     width * (variant === "icon" ? 498 / 363 : 504 / 1444),
   );

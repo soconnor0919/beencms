@@ -7,7 +7,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
-export const createTable = sqliteTableCreator((name) => `trellis_${name}`);
+export const createTable = sqliteTableCreator((name) => `hadlock_${name}`);
 
 // ─── BetterAuth required tables ───────────────────────────────────────────────
 
@@ -235,14 +235,14 @@ export const siteSettings = createTable(
   (d) => ({
     id: d.integer().primaryKey({ autoIncrement: true }),
     siteId: d.text().notNull().default("default"),
-    siteName: d.text().notNull().default("Trellis Workforce Development"),
+    siteName: d.text().notNull().default("New Site"),
     siteUrl: d.text(),
     logoUrl: d.text(),
     iconUrl: d.text(),
     themePreset: d
       .text({
         enum: [
-          "trellis",
+          "foundation",
           "editorial",
           "studio",
           "heritage",
@@ -252,7 +252,7 @@ export const siteSettings = createTable(
         ],
       })
       .notNull()
-      .default("trellis"),
+      .default("foundation"),
     cornerStyle: d
       .text({ enum: ["square", "subtle", "rounded", "playful"] })
       .notNull()
@@ -284,11 +284,11 @@ export const siteSettings = createTable(
       .notNull()
       .default("rounded"),
     onboardingComplete: d.integer({ mode: "boolean" }).notNull().default(false),
-    primaryColor: d.text().notNull().default("#8a7d55"),
-    accentColor: d.text().notNull().default("#f8f5ee"),
-    textColor: d.text().notNull().default("#2c2826"),
-    bodyFont: d.text().notNull().default("Source Sans 3"),
-    headingFont: d.text().notNull().default("Georgia"),
+    primaryColor: d.text().notNull().default("#0076a0"),
+    accentColor: d.text().notNull().default("#f4f1ea"),
+    textColor: d.text().notNull().default("#171716"),
+    bodyFont: d.text().notNull().default("Geist"),
+    headingFont: d.text().notNull().default("Rajdhani"),
     navLinks: d.text().notNull().default("[]"), // JSON: [{label,href}]
     footerTagline: d.text(),
     contactEmail: d.text(),

@@ -1,5 +1,5 @@
 export type SiteThemeId =
-  | "trellis"
+  | "foundation"
   | "editorial"
   | "studio"
   | "heritage"
@@ -17,8 +17,8 @@ export type ButtonStyleId = "square" | "rounded" | "pill";
 
 export const COLOR_PALETTES = [
   {
-    id: "trellis",
-    name: "Trellis",
+    id: "foundation",
+    name: "Foundation",
     primaryColor: "#8a7d55",
     accentColor: "#f8f5ee",
     textColor: "#2c2826",
@@ -115,7 +115,7 @@ export type SiteTheme = {
 
 export const SITE_THEMES: readonly SiteTheme[] = [
   {
-    id: "trellis",
+    id: "foundation",
     name: "Foundation",
     description: "Calm, trustworthy, and mission-led.",
     bestFor: "Nonprofits and community organizations",
@@ -227,7 +227,7 @@ export const LAYOUT_PRESETS: readonly LayoutPreset[] = [
     name: "Classic business",
     description: "A familiar navigation, broad hero, and structured footer.",
     bestFor: "Organizations, services, and local businesses",
-    recommendedTheme: "trellis",
+    recommendedTheme: "foundation",
     headerStyle: "standard",
     footerStyle: "columns",
     sectionSpacing: "balanced",

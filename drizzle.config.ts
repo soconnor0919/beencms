@@ -6,5 +6,5 @@ export default {
   dbCredentials: {
     url: process.env.DATABASE_URL ?? "db.sqlite",
   },
-  tablesFilter: ["trellis_*"],
+  tablesFilter: ["hadlock_*"],
 } satisfies Config;

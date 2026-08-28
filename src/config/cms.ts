@@ -1,17 +1,15 @@
 /**
  * cms.ts — compile-time configuration for this CMS instance.
  *
- * Swap this file (or extend it via environment variables) to white-label
- * the CMS for a different tenant. Runtime overrides (logo, colors, SEO copy,
- * nav links) live in the `site_settings` database table and take precedence
- * over these defaults at request time.
+ * Platform-wide fallbacks used before a tenant completes onboarding. Tenant
+ * identity and design live in site-scoped database records.
  */
 
 // ── Engine identity — do not change in forks ──────────────────────────────────
 
 export const cmsInfo = {
   /** The name of the CMS engine. Fork-invariant. */
-  name:    "hadlockCMS",
+  name: "hadlockCMS",
   /** Company responsible for the CMS engine. */
   company: "Hadlock Technologies",
   /** Semantic version of the engine. Bump on breaking schema/API changes. */
@@ -30,8 +28,8 @@ export interface ContentPageDef {
 }
 
 export const contentPages: ContentPageDef[] = [
-  { page: "home",   label: "Home",   href: "/" },
-  { page: "about",  label: "About",  href: "/about" },
+  { page: "home", label: "Home", href: "/" },
+  { page: "about", label: "About", href: "/about" },
   { page: "donate", label: "Donate", href: "/donate" },
 ];
 
@@ -52,9 +50,9 @@ export interface CmsFeatures {
 
 export const features: CmsFeatures = {
   programs: true,
-  team:     true,
+  team: true,
   messages: true,
-  blog:     true,
+  blog: true,
   calendar: true,
 };
 
@@ -62,16 +60,16 @@ export const features: CmsFeatures = {
 
 export const defaultTheme = {
   /** Hex color used for buttons, links, and UI accents. */
-  primaryColor: "#8a7d55",
+  primaryColor: "#0076a0",
   /** Hex color used for cream/light section backgrounds. */
-  accentColor:  "#f8f5ee",
+  accentColor: "#f4f1ea",
   /** Hex color used for default body text. */
-  textColor:    "#2c2826",
+  textColor: "#171716",
 };
 
 // ── App identity defaults — overridden at runtime by site_settings ─────────────
 
 export const appDefaults = {
-  name:        "Trellis Workforce Development",
-  description: "Creating meaningful employment for those in recovery — building life skills and leadership.",
+  name: "New Site",
+  description: "A website created with hadlockCMS.",
 };

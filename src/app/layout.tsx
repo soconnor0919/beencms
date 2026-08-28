@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 import { type Metadata } from "next";
-import { Source_Sans_3 } from "next/font/google";
+import { Geist, Geist_Mono, Rajdhani, Source_Sans_3 } from "next/font/google";
 import { Suspense } from "react";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/components/ui/sonner";
@@ -46,8 +46,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const icons: Metadata["icons"] = row?.iconUrl
     ? [{ rel: "icon", url: row.iconUrl }]
     : [
-        { rel: "icon", url: "/icon.svg", type: "image/svg+xml" },
-        { rel: "icon", url: "/favicon.ico" },
+        {
+          rel: "icon",
+          url: "/branding/hadlock/icon-blue.svg",
+          type: "image/svg+xml",
+        },
       ];
 
   return {
@@ -63,6 +66,22 @@ const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["300", "400", "600", "700"],
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
+
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  variable: "--font-rajdhani",
+  weight: ["400", "500", "600", "700"],
 });
 
 export default async function RootLayout({
@@ -87,8 +106,8 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={sourceSans.variable}
-      data-site-theme={organization?.themePreset ?? "trellis"}
+      className={`${sourceSans.variable} ${geist.variable} ${geistMono.variable} ${rajdhani.variable}`}
+      data-site-theme={organization?.themePreset ?? "foundation"}
       suppressHydrationWarning
     >
       <body>

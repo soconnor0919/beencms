@@ -22,7 +22,7 @@ const snapshotSchema = z.object({
   version: z.literal(1),
   settings: z.object({
     themePreset: z.enum([
-      "trellis",
+      "foundation",
       "editorial",
       "studio",
       "heritage",

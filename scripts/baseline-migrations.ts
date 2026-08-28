@@ -18,7 +18,7 @@ const database = new Database(databasePath);
 try {
   const existing = database
     .prepare(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'trellis_dynamic_page'",
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'hadlock_dynamic_page'",
     )
     .get();
   if (!existing)

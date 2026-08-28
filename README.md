@@ -1,6 +1,7 @@
 # hadlockCMS
 
-A white-label Next.js content management engine by Hadlock Technologies. Fork once, power any number of client sites.
+A multi-tenant website platform by Hadlock Technologies. One installation can
+power independently branded client sites without client-specific forks.
 
 ## What's included
 
@@ -54,19 +55,19 @@ bun run db:seed
 bun run dev
 ```
 
-Use `db:push` for a fresh development database. Deployments should run
-`bun run db:migrate` before starting the new application version.
+`db:seed` creates a neutral platform administrator and a blank site that enters
+onboarding. Deployments should run `bun run db:migrate` before starting the new
+application version.
 
-For a database created by an older pre-migration version, first make a backup,
-then run:
+Trellis Workforce Development is provisioned as a client tenant—not as a
+platform default:
 
 ```bash
-bun run db:push
-bun run db:baseline --confirm-schema-current
+bun run db:seed:trellis
 ```
 
-This records the current migration set without replaying it. Future releases can
-then use `bun run db:migrate` normally.
+Its reproducible provisioning package lives in `clients/trellis/`; runtime
+content remains site-scoped in the database and media storage.
 
 ## Operations
 
@@ -151,23 +152,9 @@ the wizard configures that site’s settings and navigation and only creates sta
 homepage blocks when the site does not already have a homepage. Admins can run it
 again later from **Settings → Themes → Run site setup**.
 
-## Forking for a new client
+## Client tenancy
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full fork workflow and file ownership map.
-
-```bash
-git clone https://github.com/your-org/hadlockcms.git my-client
-cd my-client
-git remote rename origin upstream
-gh repo create soconnor0919/my-client --public --source=. --push
-git remote add origin https://github.com/soconnor0919/my-client
-git config merge.ours.driver true
-# Edit src/config/cms.ts, replace public/ assets, build out src/app/(site)/
-```
-
-## Pulling engine updates
-
-```bash
-git fetch upstream
-git merge upstream/main   # instance files (cms.ts, (site)/**, public/**) are never overwritten
-```
+Do not fork hadlockCMS for each client. Create a site through onboarding or the
+platform API, assign memberships, connect its hostname, and store its settings,
+content, media, billing, and agent credentials under that site ID. See
+[ARCHITECTURE.md](./ARCHITECTURE.md) for the ownership and isolation model.

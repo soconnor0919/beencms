@@ -14,7 +14,7 @@ test("admin sign-in is branded and accessible", async ({ page }) => {
 
 test("seeded owner can authenticate and reach onboarding", async ({ page }) => {
   await page.goto("/admin/login");
-  await page.getByLabel("Email").fill("admin@trelliswd.org");
+  await page.getByLabel("Email").fill("admin@hadlock.tech");
   await page.getByLabel("Password").fill("ChangeMe123!");
   await page.getByRole("button", { name: "Sign In" }).click();
   await page.waitForURL(/\/admin\/onboarding(?:\?|$)|\/admin$/);

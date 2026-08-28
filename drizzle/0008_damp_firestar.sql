@@ -1,1 +1,1 @@
-ALTER TABLE `trellis_site_subscription` ADD `lastStripeEventAt` integer;
+ALTER TABLE `hadlock_site_subscription` ADD `lastStripeEventAt` integer;

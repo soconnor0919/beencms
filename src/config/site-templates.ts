@@ -135,7 +135,7 @@ export const BUILT_IN_SITE_TEMPLATES: readonly BuiltInSiteTemplate[] = [
     "Essential Business",
     "A polished service-business site with clear navigation and conversion paths.",
     "business",
-    "trellis",
+    "foundation",
     "classic",
   ),
   builtIn(

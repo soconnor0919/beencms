@@ -6,10 +6,14 @@ export const metadata: Metadata = {
     default: `${cmsInfo.name} Admin`,
     template: `%s | ${cmsInfo.name}`,
   },
-  icons: { icon: "/hadlockcms-icon.svg" },
+  icons: { icon: "/branding/hadlock/icon-blue.svg" },
   robots: { index: false, follow: false },
 };
 
-export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
+export default function AdminGroupLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <>{children}</>;
 }

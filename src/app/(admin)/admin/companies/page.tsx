@@ -20,7 +20,15 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, GripVertical, Loader2, ExternalLink, FileText } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Plus,
+  GripVertical,
+  Loader2,
+  ExternalLink,
+  FileText,
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -60,20 +68,37 @@ type Company = {
   imageUrl: string | null;
 };
 
-const blank: CompanyForm = { name: "", slug: "", tagline: "", description: "", status: "active", order: 0 };
+const blank: CompanyForm = {
+  name: "",
+  slug: "",
+  tagline: "",
+  description: "",
+  status: "active",
+  order: 0,
+};
 
 const STATUS_LABELS: Record<CompanyForm["status"], string> = {
-  active: "Active", coming_soon: "Coming Soon", archived: "Archived",
+  active: "Active",
+  coming_soon: "Coming Soon",
+  archived: "Archived",
 };
-const STATUS_VARIANTS: Record<CompanyForm["status"], "default" | "secondary" | "outline"> = {
-  active: "default", coming_soon: "secondary", archived: "outline",
+const STATUS_VARIANTS: Record<
+  CompanyForm["status"],
+  "default" | "secondary" | "outline"
+> = {
+  active: "default",
+  coming_soon: "secondary",
+  archived: "outline",
 };
 
 function ListSkeleton({ rows = 4 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3.5">
+        <div
+          key={i}
+          className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3.5"
+        >
           <Skeleton className="h-4 w-4 shrink-0" />
           <div className="flex-1 space-y-1.5">
             <div className="flex items-center gap-2">
@@ -105,7 +130,14 @@ function SortableCompanyRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: company.id,
   });
 
@@ -133,11 +165,15 @@ function SortableCompanyRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-foreground">{company.name}</span>
-          <Badge variant={STATUS_VARIANTS[company.status]} className="text-xs">{STATUS_LABELS[company.status]}</Badge>
+          <Badge variant={STATUS_VARIANTS[company.status]} className="text-xs">
+            {STATUS_LABELS[company.status]}
+          </Badge>
           <code className="text-xs text-muted-foreground">/{company.slug}</code>
         </div>
         {company.tagline && (
-          <p className="mt-0.5 text-xs text-muted-foreground truncate">{company.tagline}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground truncate">
+            {company.tagline}
+          </p>
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1">
@@ -157,11 +193,18 @@ function SortableCompanyRow({
         >
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
-        <Button variant="ghost" size="icon" onClick={onEdit} className="h-8 w-8" title="Edit info">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onEdit}
+          className="h-8 w-8"
+          title="Edit info"
+        >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
         <Button
-          variant="ghost" size="icon"
+          variant="ghost"
+          size="icon"
           onClick={onDelete}
           className="h-8 w-8 text-muted-foreground hover:text-destructive"
         >
@@ -175,7 +218,11 @@ function SortableCompanyRow({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminCompaniesPage() {
-  const { data: companies, refetch, isLoading } = api.companies.getAllForEditor.useQuery();
+  const {
+    data: companies,
+    refetch,
+    isLoading,
+  } = api.companies.getAllForEditor.useQuery();
   const upsert = api.companies.upsert.useMutation({
     onSuccess: async () => {
       await refetch();
@@ -206,138 +253,236 @@ export default function AdminCompaniesPage() {
     setOpen(true);
   };
   const openEdit = (c: Company) => {
-    setForm({ id: c.id, name: c.name, slug: c.slug, tagline: c.tagline ?? "", description: c.description ?? "", status: c.status, order: c.order });
+    setForm({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      tagline: c.tagline ?? "",
+      description: c.description ?? "",
+      status: c.status,
+      order: c.order,
+    });
     setOpen(true);
   };
   const autoSlug = (name: string) =>
-    name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = items.findIndex((c) => c.id === active.id);
-    const newIndex = items.findIndex((c) => c.id === over.id);
-    const reordered = arrayMove(items, oldIndex, newIndex);
-    setLocalOrder(reordered);
-    reorder.mutate(reordered.map((c, i) => ({ id: c.id, order: i })));
-  }, [items, reorder]);
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const oldIndex = items.findIndex((c) => c.id === active.id);
+      const newIndex = items.findIndex((c) => c.id === over.id);
+      const reordered = arrayMove(items, oldIndex, newIndex);
+      setLocalOrder(reordered);
+      reorder.mutate(reordered.map((c, i) => ({ id: c.id, order: i })));
+    },
+    [items, reorder],
+  );
 
   return (
-    <PageContent header={
-      <PageHeader
-        title="Programs"
-        description="Manage the Trellis enterprises shown on the public Programs page."
-        actions={<Button onClick={openNew}><Plus className="mr-2 h-4 w-4" /> Add Program</Button>}
-      />
-    }>
-
-        {/* List */}
-        {isLoading ? (
-          <ListSkeleton rows={4} />
-        ) : (
-          <>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={items.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-2">
-                  {items.map((c) => (
-                    <SortableCompanyRow
-                      key={c.id}
-                      company={c}
-                      onEdit={() => openEdit(c)}
-                      onDelete={() => { if (confirm(`Remove "${c.name}"?`)) del.mutate({ id: c.id }); }}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-            {items.length === 0 && (
-              <div className="rounded-lg border border-dashed py-16 text-center">
-                <p className="text-sm text-muted-foreground">No programs yet. Add the first one.</p>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Dialog */}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{form.id ? "Edit Program" : "Add Program"}</DialogTitle>
-              <DialogDescription>This enterprise will appear on the public Programs page.</DialogDescription>
-            </DialogHeader>
-
-            <div className="grid gap-4 py-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="co-name">Program Name *</Label>
-                <Input
-                  id="co-name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || autoSlug(e.target.value) })}
-                  placeholder="Trellis Auto Repair"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="co-slug">
-                  URL Slug * <span className="font-normal text-muted-foreground">(auto-filled)</span>
-                </Label>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm text-muted-foreground">/programs/</span>
-                  <Input
-                    id="co-slug"
-                    value={form.slug}
-                    onChange={(e) => setForm({ ...form, slug: autoSlug(e.target.value) })}
-                    placeholder="auto-repair"
-                    className="font-mono"
+    <PageContent
+      header={
+        <PageHeader
+          title="Programs"
+          description="Manage the entries shown on the public Programs page."
+          actions={
+            <Button onClick={openNew}>
+              <Plus className="mr-2 h-4 w-4" /> Add Program
+            </Button>
+          }
+        />
+      }
+    >
+      {/* List */}
+      {isLoading ? (
+        <ListSkeleton rows={4} />
+      ) : (
+        <>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-2">
+                {items.map((c) => (
+                  <SortableCompanyRow
+                    key={c.id}
+                    company={c}
+                    onEdit={() => openEdit(c)}
+                    onDelete={() => {
+                      if (confirm(`Remove "${c.name}"?`))
+                        del.mutate({ id: c.id });
+                    }}
                   />
-                </div>
+                ))}
               </div>
+            </SortableContext>
+          </DndContext>
+          {items.length === 0 && (
+            <div className="rounded-lg border border-dashed py-16 text-center">
+              <p className="text-sm text-muted-foreground">
+                No programs yet. Add the first one.
+              </p>
+            </div>
+          )}
+        </>
+      )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="co-tagline">Tagline <span className="font-normal text-muted-foreground">(optional)</span></Label>
-                <Input id="co-tagline" value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="Quality repairs. Meaningful work." />
-              </div>
+      {/* Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {form.id ? "Edit Program" : "Add Program"}
+            </DialogTitle>
+            <DialogDescription>
+              This enterprise will appear on the public Programs page.
+            </DialogDescription>
+          </DialogHeader>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="co-desc">Description <span className="font-normal text-muted-foreground">(optional)</span></Label>
-                <Textarea id="co-desc" rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe what trainees do in this enterprise…" className="resize-none" />
-              </div>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="co-name">Program Name *</Label>
+              <Input
+                id="co-name"
+                value={form.name}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    name: e.target.value,
+                    slug: form.slug || autoSlug(e.target.value),
+                  })
+                }
+                placeholder="Community Workshop"
+              />
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="co-status">Status</Label>
-                  <select
-                    id="co-status"
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value as CompanyForm["status"] })}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
-                  >
-                    <option value="active">Active</option>
-                    <option value="coming_soon">Coming Soon</option>
-                    <option value="archived">Archived</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="co-order">Display Order</Label>
-                  <Input id="co-order" type="number" min={0} value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
-                </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="co-slug">
+                URL Slug *{" "}
+                <span className="font-normal text-muted-foreground">
+                  (auto-filled)
+                </span>
+              </Label>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-muted-foreground">
+                  /programs/
+                </span>
+                <Input
+                  id="co-slug"
+                  value={form.slug}
+                  onChange={(e) =>
+                    setForm({ ...form, slug: autoSlug(e.target.value) })
+                  }
+                  placeholder="auto-repair"
+                  className="font-mono"
+                />
               </div>
             </div>
 
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button onClick={() => upsert.mutate(form)} disabled={upsert.isPending || !form.name || !form.slug}>
-                {upsert.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving…</> : "Save Program"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <div className="space-y-1.5">
+              <Label htmlFor="co-tagline">
+                Tagline{" "}
+                <span className="font-normal text-muted-foreground">
+                  (optional)
+                </span>
+              </Label>
+              <Input
+                id="co-tagline"
+                value={form.tagline}
+                onChange={(e) => setForm({ ...form, tagline: e.target.value })}
+                placeholder="Quality repairs. Meaningful work."
+              />
+            </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="co-desc">
+                Description{" "}
+                <span className="font-normal text-muted-foreground">
+                  (optional)
+                </span>
+              </Label>
+              <Textarea
+                id="co-desc"
+                rows={4}
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                placeholder="Describe what trainees do in this enterprise…"
+                className="resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="co-status">Status</Label>
+                <select
+                  id="co-status"
+                  value={form.status}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      status: e.target.value as CompanyForm["status"],
+                    })
+                  }
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+                >
+                  <option value="active">Active</option>
+                  <option value="coming_soon">Coming Soon</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="co-order">Display Order</Label>
+                <Input
+                  id="co-order"
+                  type="number"
+                  min={0}
+                  value={form.order}
+                  onChange={(e) =>
+                    setForm({ ...form, order: Number(e.target.value) })
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => upsert.mutate(form)}
+              disabled={upsert.isPending || !form.name || !form.slug}
+            >
+              {upsert.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving…
+                </>
+              ) : (
+                "Save Program"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageContent>
   );
 }

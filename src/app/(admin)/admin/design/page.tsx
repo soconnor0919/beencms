@@ -62,7 +62,7 @@ export default function DesignStudioPage() {
   const { data, refetch } = api.settings.get.useQuery();
   const update = api.settings.update.useMutation();
   const [tab, setTab] = useState<DesignTab>("layouts");
-  const [themePreset, setThemePreset] = useState<SiteThemeId>("trellis");
+  const [themePreset, setThemePreset] = useState<SiteThemeId>("foundation");
   const [layoutPreset, setLayoutPreset] = useState<LayoutPresetId>("classic");
   const [primaryColor, setPrimaryColor] = useState("#8a7d55");
   const [accentColor, setAccentColor] = useState("#f8f5ee");

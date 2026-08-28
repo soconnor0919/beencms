@@ -37,7 +37,7 @@ export async function ThemeInjector() {
   let text = defaultTheme.textColor;
   let bodyFont = "Source Sans 3";
   let headingFont = "Georgia";
-  let themePreset = "trellis";
+  let themePreset = "foundation";
   let cornerStyle = "rounded";
   let contentAlignment: ContentAlignment = "left";
   let layoutPreset: LayoutPresetId = "classic";

@@ -55,7 +55,10 @@ export default function AdminShell({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex h-screen overflow-hidden bg-muted/30">
+      <div
+        data-platform-shell
+        className="flex h-screen overflow-hidden bg-muted/30"
+      >
         <a
           href="#admin-main-content"
           className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-md bg-background px-4 py-2 font-medium shadow-lg transition-transform focus:translate-y-0"

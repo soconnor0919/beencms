@@ -4,8 +4,8 @@
   "id": "2e9a4cd1-a84c-45e1-a2d9-2ac2d7ede7bd",
   "prevId": "27ef4b46-1a8a-4342-9a0e-22e389f244d4",
   "tables": {
-    "trellis_account": {
-      "name": "trellis_account",
+    "hadlock_account": {
+      "name": "hadlock_account",
       "columns": {
         "id": {
           "name": "id",
@@ -103,10 +103,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "trellis_account_userId_trellis_user_id_fk": {
-          "name": "trellis_account_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_account",
-          "tableTo": "trellis_user",
+        "hadlock_account_userId_hadlock_user_id_fk": {
+          "name": "hadlock_account_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_account",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -121,8 +121,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_audit_log": {
-      "name": "trellis_audit_log",
+    "hadlock_audit_log": {
+      "name": "hadlock_audit_log",
       "columns": {
         "id": {
           "name": "id",
@@ -193,10 +193,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_audit_log_userId_trellis_user_id_fk": {
-          "name": "trellis_audit_log_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_audit_log",
-          "tableTo": "trellis_user",
+        "hadlock_audit_log_userId_hadlock_user_id_fk": {
+          "name": "hadlock_audit_log_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_audit_log",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -211,8 +211,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_calendar_event": {
-      "name": "trellis_calendar_event",
+    "hadlock_calendar_event": {
+      "name": "hadlock_calendar_event",
       "columns": {
         "id": {
           "name": "id",
@@ -324,8 +324,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_cms_site": {
-      "name": "trellis_cms_site",
+    "hadlock_cms_site": {
+      "name": "hadlock_cms_site",
       "columns": {
         "id": {
           "name": "id",
@@ -433,15 +433,15 @@
         }
       },
       "indexes": {
-        "trellis_cms_site_slug_unique": {
-          "name": "trellis_cms_site_slug_unique",
+        "hadlock_cms_site_slug_unique": {
+          "name": "hadlock_cms_site_slug_unique",
           "columns": [
             "slug"
           ],
           "isUnique": true
         },
-        "trellis_cms_site_hostname_unique": {
-          "name": "trellis_cms_site_hostname_unique",
+        "hadlock_cms_site_hostname_unique": {
+          "name": "hadlock_cms_site_hostname_unique",
           "columns": [
             "hostname"
           ],
@@ -453,8 +453,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_company": {
-      "name": "trellis_company",
+    "hadlock_company": {
+      "name": "hadlock_company",
       "columns": {
         "id": {
           "name": "id",
@@ -597,8 +597,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_company_page": {
-      "name": "trellis_company_page",
+    "hadlock_company_page": {
+      "name": "hadlock_company_page",
       "columns": {
         "id": {
           "name": "id",
@@ -647,10 +647,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "trellis_company_page_companyId_trellis_company_id_fk": {
-          "name": "trellis_company_page_companyId_trellis_company_id_fk",
-          "tableFrom": "trellis_company_page",
-          "tableTo": "trellis_company",
+        "hadlock_company_page_companyId_hadlock_company_id_fk": {
+          "name": "hadlock_company_page_companyId_hadlock_company_id_fk",
+          "tableFrom": "hadlock_company_page",
+          "tableTo": "hadlock_company",
           "columnsFrom": [
             "companyId"
           ],
@@ -665,8 +665,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_contact_submission": {
-      "name": "trellis_contact_submission",
+    "hadlock_contact_submission": {
+      "name": "hadlock_contact_submission",
       "columns": {
         "id": {
           "name": "id",
@@ -734,8 +734,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_contact_throttle": {
-      "name": "trellis_contact_throttle",
+    "hadlock_contact_throttle": {
+      "name": "hadlock_contact_throttle",
       "columns": {
         "key": {
           "name": "key",
@@ -774,8 +774,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_content_revision": {
-      "name": "trellis_content_revision",
+    "hadlock_content_revision": {
+      "name": "hadlock_content_revision",
       "columns": {
         "id": {
           "name": "id",
@@ -848,10 +848,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_content_revision_createdBy_trellis_user_id_fk": {
-          "name": "trellis_content_revision_createdBy_trellis_user_id_fk",
-          "tableFrom": "trellis_content_revision",
-          "tableTo": "trellis_user",
+        "hadlock_content_revision_createdBy_hadlock_user_id_fk": {
+          "name": "hadlock_content_revision_createdBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_content_revision",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "createdBy"
           ],
@@ -866,8 +866,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_custom_form": {
-      "name": "trellis_custom_form",
+    "hadlock_custom_form": {
+      "name": "hadlock_custom_form",
       "columns": {
         "id": {
           "name": "id",
@@ -968,8 +968,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_custom_form_submission": {
-      "name": "trellis_custom_form_submission",
+    "hadlock_custom_form_submission": {
+      "name": "hadlock_custom_form_submission",
       "columns": {
         "id": {
           "name": "id",
@@ -1028,10 +1028,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_custom_form_submission_formId_trellis_custom_form_id_fk": {
-          "name": "trellis_custom_form_submission_formId_trellis_custom_form_id_fk",
-          "tableFrom": "trellis_custom_form_submission",
-          "tableTo": "trellis_custom_form",
+        "hadlock_custom_form_submission_formId_hadlock_custom_form_id_fk": {
+          "name": "hadlock_custom_form_submission_formId_hadlock_custom_form_id_fk",
+          "tableFrom": "hadlock_custom_form_submission",
+          "tableTo": "hadlock_custom_form",
           "columnsFrom": [
             "formId"
           ],
@@ -1041,10 +1041,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "trellis_custom_form_submission_assignedTo_trellis_user_id_fk": {
-          "name": "trellis_custom_form_submission_assignedTo_trellis_user_id_fk",
-          "tableFrom": "trellis_custom_form_submission",
-          "tableTo": "trellis_user",
+        "hadlock_custom_form_submission_assignedTo_hadlock_user_id_fk": {
+          "name": "hadlock_custom_form_submission_assignedTo_hadlock_user_id_fk",
+          "tableFrom": "hadlock_custom_form_submission",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "assignedTo"
           ],
@@ -1059,8 +1059,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_dynamic_page": {
-      "name": "trellis_dynamic_page",
+    "hadlock_dynamic_page": {
+      "name": "hadlock_dynamic_page",
       "columns": {
         "id": {
           "name": "id",
@@ -1230,10 +1230,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_dynamic_page_createdBy_trellis_user_id_fk": {
-          "name": "trellis_dynamic_page_createdBy_trellis_user_id_fk",
-          "tableFrom": "trellis_dynamic_page",
-          "tableTo": "trellis_user",
+        "hadlock_dynamic_page_createdBy_hadlock_user_id_fk": {
+          "name": "hadlock_dynamic_page_createdBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_dynamic_page",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "createdBy"
           ],
@@ -1248,8 +1248,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_editorial_comment": {
-      "name": "trellis_editorial_comment",
+    "hadlock_editorial_comment": {
+      "name": "hadlock_editorial_comment",
       "columns": {
         "id": {
           "name": "id",
@@ -1322,10 +1322,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_editorial_comment_authorId_trellis_user_id_fk": {
-          "name": "trellis_editorial_comment_authorId_trellis_user_id_fk",
-          "tableFrom": "trellis_editorial_comment",
-          "tableTo": "trellis_user",
+        "hadlock_editorial_comment_authorId_hadlock_user_id_fk": {
+          "name": "hadlock_editorial_comment_authorId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_editorial_comment",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "authorId"
           ],
@@ -1340,8 +1340,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_editorial_workflow": {
-      "name": "trellis_editorial_workflow",
+    "hadlock_editorial_workflow": {
+      "name": "hadlock_editorial_workflow",
       "columns": {
         "id": {
           "name": "id",
@@ -1442,10 +1442,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_editorial_workflow_assignedTo_trellis_user_id_fk": {
-          "name": "trellis_editorial_workflow_assignedTo_trellis_user_id_fk",
-          "tableFrom": "trellis_editorial_workflow",
-          "tableTo": "trellis_user",
+        "hadlock_editorial_workflow_assignedTo_hadlock_user_id_fk": {
+          "name": "hadlock_editorial_workflow_assignedTo_hadlock_user_id_fk",
+          "tableFrom": "hadlock_editorial_workflow",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "assignedTo"
           ],
@@ -1455,10 +1455,10 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "trellis_editorial_workflow_lockedBy_trellis_user_id_fk": {
-          "name": "trellis_editorial_workflow_lockedBy_trellis_user_id_fk",
-          "tableFrom": "trellis_editorial_workflow",
-          "tableTo": "trellis_user",
+        "hadlock_editorial_workflow_lockedBy_hadlock_user_id_fk": {
+          "name": "hadlock_editorial_workflow_lockedBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_editorial_workflow",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "lockedBy"
           ],
@@ -1468,10 +1468,10 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "trellis_editorial_workflow_updatedBy_trellis_user_id_fk": {
-          "name": "trellis_editorial_workflow_updatedBy_trellis_user_id_fk",
-          "tableFrom": "trellis_editorial_workflow",
-          "tableTo": "trellis_user",
+        "hadlock_editorial_workflow_updatedBy_hadlock_user_id_fk": {
+          "name": "hadlock_editorial_workflow_updatedBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_editorial_workflow",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "updatedBy"
           ],
@@ -1486,8 +1486,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_media_asset": {
-      "name": "trellis_media_asset",
+    "hadlock_media_asset": {
+      "name": "hadlock_media_asset",
       "columns": {
         "id": {
           "name": "id",
@@ -1652,8 +1652,8 @@
         }
       },
       "indexes": {
-        "trellis_media_asset_url_unique": {
-          "name": "trellis_media_asset_url_unique",
+        "hadlock_media_asset_url_unique": {
+          "name": "hadlock_media_asset_url_unique",
           "columns": [
             "url"
           ],
@@ -1669,10 +1669,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_media_asset_uploadedBy_trellis_user_id_fk": {
-          "name": "trellis_media_asset_uploadedBy_trellis_user_id_fk",
-          "tableFrom": "trellis_media_asset",
-          "tableTo": "trellis_user",
+        "hadlock_media_asset_uploadedBy_hadlock_user_id_fk": {
+          "name": "hadlock_media_asset_uploadedBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_media_asset",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "uploadedBy"
           ],
@@ -1687,8 +1687,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_media_variant": {
-      "name": "trellis_media_variant",
+    "hadlock_media_variant": {
+      "name": "hadlock_media_variant",
       "columns": {
         "id": {
           "name": "id",
@@ -1771,8 +1771,8 @@
         }
       },
       "indexes": {
-        "trellis_media_variant_url_unique": {
-          "name": "trellis_media_variant_url_unique",
+        "hadlock_media_variant_url_unique": {
+          "name": "hadlock_media_variant_url_unique",
           "columns": [
             "url"
           ],
@@ -1796,10 +1796,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_media_variant_assetId_trellis_media_asset_id_fk": {
-          "name": "trellis_media_variant_assetId_trellis_media_asset_id_fk",
-          "tableFrom": "trellis_media_variant",
-          "tableTo": "trellis_media_asset",
+        "hadlock_media_variant_assetId_hadlock_media_asset_id_fk": {
+          "name": "hadlock_media_variant_assetId_hadlock_media_asset_id_fk",
+          "tableFrom": "hadlock_media_variant",
+          "tableTo": "hadlock_media_asset",
           "columnsFrom": [
             "assetId"
           ],
@@ -1814,8 +1814,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_operation_event": {
-      "name": "trellis_operation_event",
+    "hadlock_operation_event": {
+      "name": "hadlock_operation_event",
       "columns": {
         "id": {
           "name": "id",
@@ -1884,8 +1884,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_page_content": {
-      "name": "trellis_page_content",
+    "hadlock_page_content": {
+      "name": "hadlock_page_content",
       "columns": {
         "id": {
           "name": "id",
@@ -1954,8 +1954,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_page_layout": {
-      "name": "trellis_page_layout",
+    "hadlock_page_layout": {
+      "name": "hadlock_page_layout",
       "columns": {
         "id": {
           "name": "id",
@@ -2017,8 +2017,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_page_seo": {
-      "name": "trellis_page_seo",
+    "hadlock_page_seo": {
+      "name": "hadlock_page_seo",
       "columns": {
         "id": {
           "name": "id",
@@ -2101,8 +2101,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_post": {
-      "name": "trellis_post",
+    "hadlock_post": {
+      "name": "hadlock_post",
       "columns": {
         "id": {
           "name": "id",
@@ -2299,10 +2299,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_post_authorId_trellis_user_id_fk": {
-          "name": "trellis_post_authorId_trellis_user_id_fk",
-          "tableFrom": "trellis_post",
-          "tableTo": "trellis_user",
+        "hadlock_post_authorId_hadlock_user_id_fk": {
+          "name": "hadlock_post_authorId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_post",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "authorId"
           ],
@@ -2317,8 +2317,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_post_term": {
-      "name": "trellis_post_term",
+    "hadlock_post_term": {
+      "name": "hadlock_post_term",
       "columns": {
         "postId": {
           "name": "postId",
@@ -2346,10 +2346,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_post_term_postId_trellis_post_id_fk": {
-          "name": "trellis_post_term_postId_trellis_post_id_fk",
-          "tableFrom": "trellis_post_term",
-          "tableTo": "trellis_post",
+        "hadlock_post_term_postId_hadlock_post_id_fk": {
+          "name": "hadlock_post_term_postId_hadlock_post_id_fk",
+          "tableFrom": "hadlock_post_term",
+          "tableTo": "hadlock_post",
           "columnsFrom": [
             "postId"
           ],
@@ -2359,10 +2359,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "trellis_post_term_termId_trellis_taxonomy_term_id_fk": {
-          "name": "trellis_post_term_termId_trellis_taxonomy_term_id_fk",
-          "tableFrom": "trellis_post_term",
-          "tableTo": "trellis_taxonomy_term",
+        "hadlock_post_term_termId_hadlock_taxonomy_term_id_fk": {
+          "name": "hadlock_post_term_termId_hadlock_taxonomy_term_id_fk",
+          "tableFrom": "hadlock_post_term",
+          "tableTo": "hadlock_taxonomy_term",
           "columnsFrom": [
             "termId"
           ],
@@ -2377,8 +2377,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_redirect": {
-      "name": "trellis_redirect",
+    "hadlock_redirect": {
+      "name": "hadlock_redirect",
       "columns": {
         "id": {
           "name": "id",
@@ -2433,8 +2433,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_reusable_block": {
-      "name": "trellis_reusable_block",
+    "hadlock_reusable_block": {
+      "name": "hadlock_reusable_block",
       "columns": {
         "id": {
           "name": "id",
@@ -2514,10 +2514,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_reusable_block_createdBy_trellis_user_id_fk": {
-          "name": "trellis_reusable_block_createdBy_trellis_user_id_fk",
-          "tableFrom": "trellis_reusable_block",
-          "tableTo": "trellis_user",
+        "hadlock_reusable_block_createdBy_hadlock_user_id_fk": {
+          "name": "hadlock_reusable_block_createdBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_reusable_block",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "createdBy"
           ],
@@ -2532,8 +2532,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_session": {
-      "name": "trellis_session",
+    "hadlock_session": {
+      "name": "hadlock_session",
       "columns": {
         "id": {
           "name": "id",
@@ -2595,8 +2595,8 @@
         }
       },
       "indexes": {
-        "trellis_session_token_unique": {
-          "name": "trellis_session_token_unique",
+        "hadlock_session_token_unique": {
+          "name": "hadlock_session_token_unique",
           "columns": [
             "token"
           ],
@@ -2604,10 +2604,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_session_userId_trellis_user_id_fk": {
-          "name": "trellis_session_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_session",
-          "tableTo": "trellis_user",
+        "hadlock_session_userId_hadlock_user_id_fk": {
+          "name": "hadlock_session_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_session",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -2622,8 +2622,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_site_membership": {
-      "name": "trellis_site_membership",
+    "hadlock_site_membership": {
+      "name": "hadlock_site_membership",
       "columns": {
         "siteId": {
           "name": "siteId",
@@ -2667,10 +2667,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_site_membership_siteId_trellis_cms_site_id_fk": {
-          "name": "trellis_site_membership_siteId_trellis_cms_site_id_fk",
-          "tableFrom": "trellis_site_membership",
-          "tableTo": "trellis_cms_site",
+        "hadlock_site_membership_siteId_hadlock_cms_site_id_fk": {
+          "name": "hadlock_site_membership_siteId_hadlock_cms_site_id_fk",
+          "tableFrom": "hadlock_site_membership",
+          "tableTo": "hadlock_cms_site",
           "columnsFrom": [
             "siteId"
           ],
@@ -2680,10 +2680,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "trellis_site_membership_userId_trellis_user_id_fk": {
-          "name": "trellis_site_membership_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_site_membership",
-          "tableTo": "trellis_user",
+        "hadlock_site_membership_userId_hadlock_user_id_fk": {
+          "name": "hadlock_site_membership_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_site_membership",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -2698,8 +2698,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_site_publication": {
-      "name": "trellis_site_publication",
+    "hadlock_site_publication": {
+      "name": "hadlock_site_publication",
       "columns": {
         "id": {
           "name": "id",
@@ -2772,10 +2772,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_site_publication_siteId_trellis_cms_site_id_fk": {
-          "name": "trellis_site_publication_siteId_trellis_cms_site_id_fk",
-          "tableFrom": "trellis_site_publication",
-          "tableTo": "trellis_cms_site",
+        "hadlock_site_publication_siteId_hadlock_cms_site_id_fk": {
+          "name": "hadlock_site_publication_siteId_hadlock_cms_site_id_fk",
+          "tableFrom": "hadlock_site_publication",
+          "tableTo": "hadlock_cms_site",
           "columnsFrom": [
             "siteId"
           ],
@@ -2785,10 +2785,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "trellis_site_publication_createdBy_trellis_user_id_fk": {
-          "name": "trellis_site_publication_createdBy_trellis_user_id_fk",
-          "tableFrom": "trellis_site_publication",
-          "tableTo": "trellis_user",
+        "hadlock_site_publication_createdBy_hadlock_user_id_fk": {
+          "name": "hadlock_site_publication_createdBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_site_publication",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "createdBy"
           ],
@@ -2803,8 +2803,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_site_settings": {
-      "name": "trellis_site_settings",
+    "hadlock_site_settings": {
+      "name": "hadlock_site_settings",
       "columns": {
         "id": {
           "name": "id",
@@ -2827,7 +2827,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'Trellis Workforce Development'"
+          "default": "'New Site'"
         },
         "siteUrl": {
           "name": "siteUrl",
@@ -2856,7 +2856,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'trellis'"
+          "default": "'foundation'"
         },
         "cornerStyle": {
           "name": "cornerStyle",
@@ -2928,7 +2928,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'#8a7d55'"
+          "default": "'#0076a0'"
         },
         "accentColor": {
           "name": "accentColor",
@@ -2936,7 +2936,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'#f8f5ee'"
+          "default": "'#f4f1ea'"
         },
         "textColor": {
           "name": "textColor",
@@ -2944,7 +2944,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'#2c2826'"
+          "default": "'#171716'"
         },
         "bodyFont": {
           "name": "bodyFont",
@@ -2952,7 +2952,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'Source Sans 3'"
+          "default": "'Geist'"
         },
         "headingFont": {
           "name": "headingFont",
@@ -2960,7 +2960,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'Georgia'"
+          "default": "'Rajdhani'"
         },
         "navLinks": {
           "name": "navLinks",
@@ -3042,8 +3042,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_site_template": {
-      "name": "trellis_site_template",
+    "hadlock_site_template": {
+      "name": "hadlock_site_template",
       "columns": {
         "id": {
           "name": "id",
@@ -3129,10 +3129,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_site_template_siteId_trellis_cms_site_id_fk": {
-          "name": "trellis_site_template_siteId_trellis_cms_site_id_fk",
-          "tableFrom": "trellis_site_template",
-          "tableTo": "trellis_cms_site",
+        "hadlock_site_template_siteId_hadlock_cms_site_id_fk": {
+          "name": "hadlock_site_template_siteId_hadlock_cms_site_id_fk",
+          "tableFrom": "hadlock_site_template",
+          "tableTo": "hadlock_cms_site",
           "columnsFrom": [
             "siteId"
           ],
@@ -3142,10 +3142,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "trellis_site_template_createdBy_trellis_user_id_fk": {
-          "name": "trellis_site_template_createdBy_trellis_user_id_fk",
-          "tableFrom": "trellis_site_template",
-          "tableTo": "trellis_user",
+        "hadlock_site_template_createdBy_hadlock_user_id_fk": {
+          "name": "hadlock_site_template_createdBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_site_template",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "createdBy"
           ],
@@ -3160,8 +3160,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_taxonomy_term": {
-      "name": "trellis_taxonomy_term",
+    "hadlock_taxonomy_term": {
+      "name": "hadlock_taxonomy_term",
       "columns": {
         "id": {
           "name": "id",
@@ -3223,8 +3223,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_team_member": {
-      "name": "trellis_team_member",
+    "hadlock_team_member": {
+      "name": "hadlock_team_member",
       "columns": {
         "id": {
           "name": "id",
@@ -3316,8 +3316,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_two_factor": {
-      "name": "trellis_two_factor",
+    "hadlock_two_factor": {
+      "name": "hadlock_two_factor",
       "columns": {
         "id": {
           "name": "id",
@@ -3365,10 +3365,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_two_factor_userId_trellis_user_id_fk": {
-          "name": "trellis_two_factor_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_two_factor",
-          "tableTo": "trellis_user",
+        "hadlock_two_factor_userId_hadlock_user_id_fk": {
+          "name": "hadlock_two_factor_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_two_factor",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -3383,8 +3383,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_user": {
-      "name": "trellis_user",
+    "hadlock_user": {
+      "name": "hadlock_user",
       "columns": {
         "id": {
           "name": "id",
@@ -3448,8 +3448,8 @@
         }
       },
       "indexes": {
-        "trellis_user_email_unique": {
-          "name": "trellis_user_email_unique",
+        "hadlock_user_email_unique": {
+          "name": "hadlock_user_email_unique",
           "columns": [
             "email"
           ],
@@ -3461,8 +3461,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_user_invitation": {
-      "name": "trellis_user_invitation",
+    "hadlock_user_invitation": {
+      "name": "hadlock_user_invitation",
       "columns": {
         "id": {
           "name": "id",
@@ -3538,8 +3538,8 @@
         }
       },
       "indexes": {
-        "trellis_user_invitation_tokenHash_unique": {
-          "name": "trellis_user_invitation_tokenHash_unique",
+        "hadlock_user_invitation_tokenHash_unique": {
+          "name": "hadlock_user_invitation_tokenHash_unique",
           "columns": [
             "tokenHash"
           ],
@@ -3554,10 +3554,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_user_invitation_invitedBy_trellis_user_id_fk": {
-          "name": "trellis_user_invitation_invitedBy_trellis_user_id_fk",
-          "tableFrom": "trellis_user_invitation",
-          "tableTo": "trellis_user",
+        "hadlock_user_invitation_invitedBy_hadlock_user_id_fk": {
+          "name": "hadlock_user_invitation_invitedBy_hadlock_user_id_fk",
+          "tableFrom": "hadlock_user_invitation",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "invitedBy"
           ],
@@ -3572,8 +3572,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_user_profile": {
-      "name": "trellis_user_profile",
+    "hadlock_user_profile": {
+      "name": "hadlock_user_profile",
       "columns": {
         "userId": {
           "name": "userId",
@@ -3638,10 +3638,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "trellis_user_profile_userId_trellis_user_id_fk": {
-          "name": "trellis_user_profile_userId_trellis_user_id_fk",
-          "tableFrom": "trellis_user_profile",
-          "tableTo": "trellis_user",
+        "hadlock_user_profile_userId_hadlock_user_id_fk": {
+          "name": "hadlock_user_profile_userId_hadlock_user_id_fk",
+          "tableFrom": "hadlock_user_profile",
+          "tableTo": "hadlock_user",
           "columnsFrom": [
             "userId"
           ],
@@ -3656,8 +3656,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_verification": {
-      "name": "trellis_verification",
+    "hadlock_verification": {
+      "name": "hadlock_verification",
       "columns": {
         "id": {
           "name": "id",
@@ -3710,8 +3710,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_webhook_delivery": {
-      "name": "trellis_webhook_delivery",
+    "hadlock_webhook_delivery": {
+      "name": "hadlock_webhook_delivery",
       "columns": {
         "id": {
           "name": "id",
@@ -3775,10 +3775,10 @@
         }
       },
       "foreignKeys": {
-        "trellis_webhook_delivery_endpointId_trellis_webhook_endpoint_id_fk": {
-          "name": "trellis_webhook_delivery_endpointId_trellis_webhook_endpoint_id_fk",
-          "tableFrom": "trellis_webhook_delivery",
-          "tableTo": "trellis_webhook_endpoint",
+        "hadlock_webhook_delivery_endpointId_hadlock_webhook_endpoint_id_fk": {
+          "name": "hadlock_webhook_delivery_endpointId_hadlock_webhook_endpoint_id_fk",
+          "tableFrom": "hadlock_webhook_delivery",
+          "tableTo": "hadlock_webhook_endpoint",
           "columnsFrom": [
             "endpointId"
           ],
@@ -3793,8 +3793,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "trellis_webhook_endpoint": {
-      "name": "trellis_webhook_endpoint",
+    "hadlock_webhook_endpoint": {
+      "name": "hadlock_webhook_endpoint",
       "columns": {
         "id": {
           "name": "id",

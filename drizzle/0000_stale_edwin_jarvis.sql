@@ -1,4 +1,4 @@
-CREATE TABLE `trellis_account` (
+CREATE TABLE `hadlock_account` (
 	`id` text PRIMARY KEY NOT NULL,
 	`accountId` text NOT NULL,
 	`providerId` text NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE `trellis_account` (
 	`password` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
 	`updatedAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`userId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`userId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_audit_log` (
+CREATE TABLE `hadlock_audit_log` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`userId` text,
 	`userEmail` text(256),
@@ -23,11 +23,11 @@ CREATE TABLE `trellis_audit_log` (
 	`entity` text(128),
 	`detail` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`userId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`userId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `audit_log_created_idx` ON `trellis_audit_log` (`createdAt`);--> statement-breakpoint
-CREATE TABLE `trellis_calendar_event` (
+CREATE INDEX `audit_log_created_idx` ON `hadlock_audit_log` (`createdAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_calendar_event` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text(512) NOT NULL,
 	`description` text,
@@ -41,9 +41,9 @@ CREATE TABLE `trellis_calendar_event` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE INDEX `calendar_event_start_idx` ON `trellis_calendar_event` (`startAt`);--> statement-breakpoint
-CREATE INDEX `calendar_event_status_idx` ON `trellis_calendar_event` (`status`);--> statement-breakpoint
-CREATE TABLE `trellis_cms_site` (
+CREATE INDEX `calendar_event_start_idx` ON `hadlock_calendar_event` (`startAt`);--> statement-breakpoint
+CREATE INDEX `calendar_event_status_idx` ON `hadlock_calendar_event` (`status`);--> statement-breakpoint
+CREATE TABLE `hadlock_cms_site` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text(256) NOT NULL,
 	`slug` text(128) NOT NULL,
@@ -55,9 +55,9 @@ CREATE TABLE `trellis_cms_site` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_cms_site_slug_unique` ON `trellis_cms_site` (`slug`);--> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_cms_site_hostname_unique` ON `trellis_cms_site` (`hostname`);--> statement-breakpoint
-CREATE TABLE `trellis_company` (
+CREATE UNIQUE INDEX `hadlock_cms_site_slug_unique` ON `hadlock_cms_site` (`slug`);--> statement-breakpoint
+CREATE UNIQUE INDEX `hadlock_cms_site_hostname_unique` ON `hadlock_cms_site` (`hostname`);--> statement-breakpoint
+CREATE TABLE `hadlock_company` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text(256) NOT NULL,
 	`slug` text(256) NOT NULL,
@@ -70,19 +70,19 @@ CREATE TABLE `trellis_company` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_company_slug_unique` ON `trellis_company` (`slug`);--> statement-breakpoint
-CREATE INDEX `company_slug_idx` ON `trellis_company` (`slug`);--> statement-breakpoint
-CREATE INDEX `company_order_idx` ON `trellis_company` (`order`);--> statement-breakpoint
-CREATE TABLE `trellis_company_page` (
+CREATE UNIQUE INDEX `hadlock_company_slug_unique` ON `hadlock_company` (`slug`);--> statement-breakpoint
+CREATE INDEX `company_slug_idx` ON `hadlock_company` (`slug`);--> statement-breakpoint
+CREATE INDEX `company_order_idx` ON `hadlock_company` (`order`);--> statement-breakpoint
+CREATE TABLE `hadlock_company_page` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`companyId` integer NOT NULL,
 	`layout` text DEFAULT '[]' NOT NULL,
 	`draftLayout` text,
 	`updatedAt` integer,
-	FOREIGN KEY (`companyId`) REFERENCES `trellis_company`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`companyId`) REFERENCES `hadlock_company`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_contact_submission` (
+CREATE TABLE `hadlock_contact_submission` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text(256) NOT NULL,
 	`email` text(256) NOT NULL,
@@ -92,13 +92,13 @@ CREATE TABLE `trellis_contact_submission` (
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_contact_throttle` (
+CREATE TABLE `hadlock_contact_throttle` (
 	`key` text(128) PRIMARY KEY NOT NULL,
 	`count` integer DEFAULT 0 NOT NULL,
 	`windowStart` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_content_revision` (
+CREATE TABLE `hadlock_content_revision` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`entityType` text NOT NULL,
 	`entityId` text(256) NOT NULL,
@@ -106,11 +106,11 @@ CREATE TABLE `trellis_content_revision` (
 	`createdBy` text,
 	`createdEmail` text(256),
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`createdBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`createdBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `content_revision_entity_idx` ON `trellis_content_revision` (`entityType`,`entityId`,`createdAt`);--> statement-breakpoint
-CREATE TABLE `trellis_custom_form` (
+CREATE INDEX `content_revision_entity_idx` ON `hadlock_content_revision` (`entityType`,`entityId`,`createdAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_custom_form` (
 	`id` text PRIMARY KEY NOT NULL,
 	`siteId` text DEFAULT 'default' NOT NULL,
 	`name` text(256) NOT NULL,
@@ -124,20 +124,20 @@ CREATE TABLE `trellis_custom_form` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `custom_form_slug_idx` ON `trellis_custom_form` (`siteId`,`slug`);--> statement-breakpoint
-CREATE TABLE `trellis_custom_form_submission` (
+CREATE UNIQUE INDEX `custom_form_slug_idx` ON `hadlock_custom_form` (`siteId`,`slug`);--> statement-breakpoint
+CREATE TABLE `hadlock_custom_form_submission` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`formId` text NOT NULL,
 	`data` text NOT NULL,
 	`status` text DEFAULT 'new' NOT NULL,
 	`assignedTo` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`formId`) REFERENCES `trellis_custom_form`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`assignedTo`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`formId`) REFERENCES `hadlock_custom_form`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`assignedTo`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `custom_form_submission_idx` ON `trellis_custom_form_submission` (`formId`,`status`,`createdAt`);--> statement-breakpoint
-CREATE TABLE `trellis_dynamic_page` (
+CREATE INDEX `custom_form_submission_idx` ON `hadlock_custom_form_submission` (`formId`,`status`,`createdAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_dynamic_page` (
 	`id` text PRIMARY KEY NOT NULL,
 	`siteId` text DEFAULT 'default' NOT NULL,
 	`parentId` text,
@@ -157,13 +157,13 @@ CREATE TABLE `trellis_dynamic_page` (
 	`createdBy` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
 	`updatedAt` integer,
-	FOREIGN KEY (`createdBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`createdBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `dynamic_page_path_locale_idx` ON `trellis_dynamic_page` (`siteId`,`slug`,`locale`);--> statement-breakpoint
-CREATE INDEX `dynamic_page_parent_idx` ON `trellis_dynamic_page` (`siteId`,`parentId`);--> statement-breakpoint
-CREATE INDEX `dynamic_page_status_idx` ON `trellis_dynamic_page` (`siteId`,`status`);--> statement-breakpoint
-CREATE TABLE `trellis_editorial_comment` (
+CREATE UNIQUE INDEX `dynamic_page_path_locale_idx` ON `hadlock_dynamic_page` (`siteId`,`slug`,`locale`);--> statement-breakpoint
+CREATE INDEX `dynamic_page_parent_idx` ON `hadlock_dynamic_page` (`siteId`,`parentId`);--> statement-breakpoint
+CREATE INDEX `dynamic_page_status_idx` ON `hadlock_dynamic_page` (`siteId`,`status`);--> statement-breakpoint
+CREATE TABLE `hadlock_editorial_comment` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`entityType` text(64) NOT NULL,
 	`entityId` text(256) NOT NULL,
@@ -171,11 +171,11 @@ CREATE TABLE `trellis_editorial_comment` (
 	`authorId` text,
 	`resolvedAt` integer,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`authorId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`authorId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `editorial_comment_entity_idx` ON `trellis_editorial_comment` (`entityType`,`entityId`,`createdAt`);--> statement-breakpoint
-CREATE TABLE `trellis_editorial_workflow` (
+CREATE INDEX `editorial_comment_entity_idx` ON `hadlock_editorial_comment` (`entityType`,`entityId`,`createdAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_editorial_workflow` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`entityType` text NOT NULL,
 	`entityId` text(256) NOT NULL,
@@ -187,13 +187,13 @@ CREATE TABLE `trellis_editorial_workflow` (
 	`unpublishAt` integer,
 	`updatedBy` text,
 	`updatedAt` integer,
-	FOREIGN KEY (`assignedTo`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null,
-	FOREIGN KEY (`lockedBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null,
-	FOREIGN KEY (`updatedBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`assignedTo`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`lockedBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`updatedBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `editorial_workflow_entity_idx` ON `trellis_editorial_workflow` (`entityType`,`entityId`);--> statement-breakpoint
-CREATE TABLE `trellis_media_asset` (
+CREATE UNIQUE INDEX `editorial_workflow_entity_idx` ON `hadlock_editorial_workflow` (`entityType`,`entityId`);--> statement-breakpoint
+CREATE TABLE `hadlock_media_asset` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`url` text NOT NULL,
 	`filename` text(512) NOT NULL,
@@ -205,11 +205,11 @@ CREATE TABLE `trellis_media_asset` (
 	`alt` text(1000) DEFAULT '' NOT NULL,
 	`uploadedBy` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`uploadedBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`uploadedBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_media_asset_url_unique` ON `trellis_media_asset` (`url`);--> statement-breakpoint
-CREATE TABLE `trellis_operation_event` (
+CREATE UNIQUE INDEX `hadlock_media_asset_url_unique` ON `hadlock_media_asset` (`url`);--> statement-breakpoint
+CREATE TABLE `hadlock_operation_event` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`level` text DEFAULT 'info' NOT NULL,
 	`source` text(128) NOT NULL,
@@ -218,8 +218,8 @@ CREATE TABLE `trellis_operation_event` (
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
-CREATE INDEX `operation_event_created_idx` ON `trellis_operation_event` (`createdAt`);--> statement-breakpoint
-CREATE TABLE `trellis_page_content` (
+CREATE INDEX `operation_event_created_idx` ON `hadlock_operation_event` (`createdAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_page_content` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`page` text(128) NOT NULL,
 	`key` text(128) NOT NULL,
@@ -228,8 +228,8 @@ CREATE TABLE `trellis_page_content` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE INDEX `page_content_idx` ON `trellis_page_content` (`page`,`key`);--> statement-breakpoint
-CREATE TABLE `trellis_page_layout` (
+CREATE INDEX `page_content_idx` ON `hadlock_page_content` (`page`,`key`);--> statement-breakpoint
+CREATE TABLE `hadlock_page_layout` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`page` text(128) NOT NULL,
 	`layout` text DEFAULT '[]' NOT NULL,
@@ -237,8 +237,8 @@ CREATE TABLE `trellis_page_layout` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_page_layout_page_unique` ON `trellis_page_layout` (`page`);--> statement-breakpoint
-CREATE TABLE `trellis_page_seo` (
+CREATE UNIQUE INDEX `hadlock_page_layout_page_unique` ON `hadlock_page_layout` (`page`);--> statement-breakpoint
+CREATE TABLE `hadlock_page_seo` (
 	`page` text(128) PRIMARY KEY NOT NULL,
 	`title` text(512),
 	`description` text(1000),
@@ -248,7 +248,7 @@ CREATE TABLE `trellis_page_seo` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_post` (
+CREATE TABLE `hadlock_post` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text(512) NOT NULL,
 	`slug` text(256) NOT NULL,
@@ -266,30 +266,30 @@ CREATE TABLE `trellis_post` (
 	`authorId` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
 	`updatedAt` integer,
-	FOREIGN KEY (`authorId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`authorId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_post_slug_unique` ON `trellis_post` (`slug`);--> statement-breakpoint
-CREATE INDEX `post_slug_idx` ON `trellis_post` (`slug`);--> statement-breakpoint
-CREATE INDEX `post_status_idx` ON `trellis_post` (`status`);--> statement-breakpoint
-CREATE INDEX `post_published_idx` ON `trellis_post` (`publishedAt`);--> statement-breakpoint
-CREATE TABLE `trellis_post_term` (
+CREATE UNIQUE INDEX `hadlock_post_slug_unique` ON `hadlock_post` (`slug`);--> statement-breakpoint
+CREATE INDEX `post_slug_idx` ON `hadlock_post` (`slug`);--> statement-breakpoint
+CREATE INDEX `post_status_idx` ON `hadlock_post` (`status`);--> statement-breakpoint
+CREATE INDEX `post_published_idx` ON `hadlock_post` (`publishedAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_post_term` (
 	`postId` integer NOT NULL,
 	`termId` integer NOT NULL,
-	FOREIGN KEY (`postId`) REFERENCES `trellis_post`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`termId`) REFERENCES `trellis_taxonomy_term`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`postId`) REFERENCES `hadlock_post`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`termId`) REFERENCES `hadlock_taxonomy_term`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `post_term_unique_idx` ON `trellis_post_term` (`postId`,`termId`);--> statement-breakpoint
-CREATE TABLE `trellis_redirect` (
+CREATE UNIQUE INDEX `post_term_unique_idx` ON `hadlock_post_term` (`postId`,`termId`);--> statement-breakpoint
+CREATE TABLE `hadlock_redirect` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`fromPath` text(512) NOT NULL,
 	`toPath` text(512) NOT NULL,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_redirect_fromPath_unique` ON `trellis_redirect` (`fromPath`);--> statement-breakpoint
-CREATE TABLE `trellis_reusable_block` (
+CREATE UNIQUE INDEX `hadlock_redirect_fromPath_unique` ON `hadlock_redirect` (`fromPath`);--> statement-breakpoint
+CREATE TABLE `hadlock_reusable_block` (
 	`id` text PRIMARY KEY NOT NULL,
 	`siteId` text DEFAULT 'default' NOT NULL,
 	`name` text(256) NOT NULL,
@@ -299,11 +299,11 @@ CREATE TABLE `trellis_reusable_block` (
 	`createdBy` text,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
 	`updatedAt` integer,
-	FOREIGN KEY (`createdBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`createdBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `reusable_block_name_idx` ON `trellis_reusable_block` (`siteId`,`name`);--> statement-breakpoint
-CREATE TABLE `trellis_session` (
+CREATE UNIQUE INDEX `reusable_block_name_idx` ON `hadlock_reusable_block` (`siteId`,`name`);--> statement-breakpoint
+CREATE TABLE `hadlock_session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`expiresAt` integer NOT NULL,
 	`token` text NOT NULL,
@@ -312,35 +312,35 @@ CREATE TABLE `trellis_session` (
 	`ipAddress` text,
 	`userAgent` text,
 	`userId` text NOT NULL,
-	FOREIGN KEY (`userId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`userId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_session_token_unique` ON `trellis_session` (`token`);--> statement-breakpoint
-CREATE TABLE `trellis_site_membership` (
+CREATE UNIQUE INDEX `hadlock_session_token_unique` ON `hadlock_session` (`token`);--> statement-breakpoint
+CREATE TABLE `hadlock_site_membership` (
 	`siteId` text NOT NULL,
 	`userId` text NOT NULL,
 	`role` text DEFAULT 'viewer' NOT NULL,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`siteId`) REFERENCES `trellis_cms_site`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`userId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`siteId`) REFERENCES `hadlock_cms_site`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`userId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `site_membership_unique_idx` ON `trellis_site_membership` (`siteId`,`userId`);--> statement-breakpoint
-CREATE TABLE `trellis_site_settings` (
+CREATE UNIQUE INDEX `site_membership_unique_idx` ON `hadlock_site_membership` (`siteId`,`userId`);--> statement-breakpoint
+CREATE TABLE `hadlock_site_settings` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`siteName` text DEFAULT 'Trellis Workforce Development' NOT NULL,
+	`siteName` text DEFAULT 'New Site' NOT NULL,
 	`siteUrl` text,
 	`logoUrl` text,
 	`iconUrl` text,
-	`themePreset` text DEFAULT 'trellis' NOT NULL,
+	`themePreset` text DEFAULT 'foundation' NOT NULL,
 	`cornerStyle` text DEFAULT 'rounded' NOT NULL,
 	`contentAlignment` text DEFAULT 'left' NOT NULL,
 	`onboardingComplete` integer DEFAULT false NOT NULL,
-	`primaryColor` text DEFAULT '#8a7d55' NOT NULL,
-	`accentColor` text DEFAULT '#f8f5ee' NOT NULL,
-	`textColor` text DEFAULT '#2c2826' NOT NULL,
-	`bodyFont` text DEFAULT 'Source Sans 3' NOT NULL,
-	`headingFont` text DEFAULT 'Georgia' NOT NULL,
+	`primaryColor` text DEFAULT '#0076a0' NOT NULL,
+	`accentColor` text DEFAULT '#f4f1ea' NOT NULL,
+	`textColor` text DEFAULT '#171716' NOT NULL,
+	`bodyFont` text DEFAULT 'Geist' NOT NULL,
+	`headingFont` text DEFAULT 'Rajdhani' NOT NULL,
 	`navLinks` text DEFAULT '[]' NOT NULL,
 	`footerTagline` text,
 	`contactEmail` text,
@@ -352,7 +352,7 @@ CREATE TABLE `trellis_site_settings` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_taxonomy_term` (
+CREATE TABLE `hadlock_taxonomy_term` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`siteId` text DEFAULT 'default' NOT NULL,
 	`type` text NOT NULL,
@@ -361,8 +361,8 @@ CREATE TABLE `trellis_taxonomy_term` (
 	`parentId` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `taxonomy_term_slug_idx` ON `trellis_taxonomy_term` (`siteId`,`type`,`slug`);--> statement-breakpoint
-CREATE TABLE `trellis_team_member` (
+CREATE UNIQUE INDEX `taxonomy_term_slug_idx` ON `hadlock_taxonomy_term` (`siteId`,`type`,`slug`);--> statement-breakpoint
+CREATE TABLE `hadlock_team_member` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text(256) NOT NULL,
 	`role` text(256) NOT NULL,
@@ -374,8 +374,8 @@ CREATE TABLE `trellis_team_member` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE INDEX `team_order_idx` ON `trellis_team_member` (`order`);--> statement-breakpoint
-CREATE TABLE `trellis_user` (
+CREATE INDEX `team_order_idx` ON `hadlock_team_member` (`order`);--> statement-breakpoint
+CREATE TABLE `hadlock_user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`email` text NOT NULL,
@@ -385,8 +385,8 @@ CREATE TABLE `trellis_user` (
 	`updatedAt` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_user_email_unique` ON `trellis_user` (`email`);--> statement-breakpoint
-CREATE TABLE `trellis_user_invitation` (
+CREATE UNIQUE INDEX `hadlock_user_email_unique` ON `hadlock_user` (`email`);--> statement-breakpoint
+CREATE TABLE `hadlock_user_invitation` (
 	`id` text PRIMARY KEY NOT NULL,
 	`email` text(256) NOT NULL,
 	`name` text(256) NOT NULL,
@@ -396,18 +396,18 @@ CREATE TABLE `trellis_user_invitation` (
 	`expiresAt` integer NOT NULL,
 	`acceptedAt` integer,
 	`createdAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`invitedBy`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`invitedBy`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `trellis_user_invitation_tokenHash_unique` ON `trellis_user_invitation` (`tokenHash`);--> statement-breakpoint
-CREATE INDEX `user_invitation_email_idx` ON `trellis_user_invitation` (`email`);--> statement-breakpoint
-CREATE TABLE `trellis_user_profile` (
+CREATE UNIQUE INDEX `hadlock_user_invitation_tokenHash_unique` ON `hadlock_user_invitation` (`tokenHash`);--> statement-breakpoint
+CREATE INDEX `user_invitation_email_idx` ON `hadlock_user_invitation` (`email`);--> statement-breakpoint
+CREATE TABLE `hadlock_user_profile` (
 	`userId` text PRIMARY KEY NOT NULL,
 	`role` text DEFAULT 'viewer' NOT NULL,
-	FOREIGN KEY (`userId`) REFERENCES `trellis_user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`userId`) REFERENCES `hadlock_user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_verification` (
+CREATE TABLE `hadlock_verification` (
 	`id` text PRIMARY KEY NOT NULL,
 	`identifier` text NOT NULL,
 	`value` text NOT NULL,
@@ -416,7 +416,7 @@ CREATE TABLE `trellis_verification` (
 	`updatedAt` integer DEFAULT (unixepoch())
 );
 --> statement-breakpoint
-CREATE TABLE `trellis_webhook_delivery` (
+CREATE TABLE `hadlock_webhook_delivery` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`endpointId` text,
 	`event` text(128) NOT NULL,
@@ -424,11 +424,11 @@ CREATE TABLE `trellis_webhook_delivery` (
 	`success` integer DEFAULT false NOT NULL,
 	`error` text,
 	`attemptedAt` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`endpointId`) REFERENCES `trellis_webhook_endpoint`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`endpointId`) REFERENCES `hadlock_webhook_endpoint`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `webhook_delivery_attempt_idx` ON `trellis_webhook_delivery` (`attemptedAt`);--> statement-breakpoint
-CREATE TABLE `trellis_webhook_endpoint` (
+CREATE INDEX `webhook_delivery_attempt_idx` ON `hadlock_webhook_delivery` (`attemptedAt`);--> statement-breakpoint
+CREATE TABLE `hadlock_webhook_endpoint` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text(256) NOT NULL,
 	`url` text NOT NULL,

@@ -49,7 +49,9 @@ async function TeamList() {
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="rounded-2xl border border-stone dark:border-border bg-cream dark:bg-muted p-16 text-center">
-            <h2 className="font-serif text-2xl font-bold text-charcoal dark:text-foreground">Team Coming Soon</h2>
+            <h2 className="font-serif text-2xl font-bold text-charcoal dark:text-foreground">
+              Team Coming Soon
+            </h2>
             <p className="mt-3 text-gray-600 dark:text-gray-400">
               We&apos;re building our team page. Check back soon.
             </p>
@@ -82,7 +84,11 @@ async function TeamList() {
                   ) : (
                     <div className="flex h-28 w-28 items-center justify-center rounded-full bg-olive/15 ring-4 ring-white dark:ring-card shadow">
                       <span className="font-serif text-3xl font-bold text-olive">
-                        {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                        {member.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .slice(0, 2)}
                       </span>
                     </div>
                   )}
@@ -93,7 +99,9 @@ async function TeamList() {
                   <h3 className="font-serif text-xl font-semibold text-charcoal dark:text-foreground">
                     {member.name}
                   </h3>
-                  <p className="mt-1 text-sm font-medium text-olive">{member.role}</p>
+                  <p className="mt-1 text-sm font-medium text-olive">
+                    {member.role}
+                  </p>
                   {member.bio && (
                     <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-4">
                       {member.bio}
@@ -109,9 +117,11 @@ async function TeamList() {
         {affiliates.length > 0 && (
           <div>
             <div className="mb-10 text-center">
-              <h2 className="font-serif text-3xl font-bold text-charcoal dark:text-foreground">Affiliates</h2>
+              <h2 className="font-serif text-3xl font-bold text-charcoal dark:text-foreground">
+                Affiliates
+              </h2>
               <p className="mt-3 text-gray-600 dark:text-gray-400">
-                Partners and advisors who support the Trellis mission.
+                Partners and advisors who support our work.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -122,10 +132,16 @@ async function TeamList() {
                 >
                   <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-olive/10">
                     <span className="font-serif text-lg font-bold text-olive">
-                      {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                      {member.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)}
                     </span>
                   </div>
-                  <p className="font-semibold text-charcoal dark:text-foreground leading-snug">{member.name}</p>
+                  <p className="font-semibold text-charcoal dark:text-foreground leading-snug">
+                    {member.name}
+                  </p>
                   <p className="mt-1 text-sm text-olive">{member.role}</p>
                 </div>
               ))}
@@ -144,9 +160,11 @@ export default function TeamPage() {
     <>
       <section className="bg-cream dark:bg-muted px-6 py-24 text-center">
         <div className="mx-auto max-w-2xl">
-          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">The Team</h1>
+          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">
+            The Team
+          </h1>
           <p className="mt-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            Trellis is led by a dedicated group of community members committed to transforming lives through meaningful work.
+            Meet the people, partners, and advisors behind our work.
           </p>
         </div>
       </section>

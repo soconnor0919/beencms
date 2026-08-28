@@ -3,10 +3,14 @@ import { cmsInfo } from "~/config/cms";
 
 export const metadata: Metadata = {
   title: `Sign in | ${cmsInfo.name}`,
-  icons: { icon: "/hadlockcms-icon.svg" },
+  icons: { icon: "/branding/hadlock/icon-blue.svg" },
   robots: { index: false, follow: false },
 };
 
-export default function AdminLoginGroupLayout({ children }: { children: React.ReactNode }) {
-  return children;
+export default function AdminLoginGroupLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <div data-platform-shell>{children}</div>;
 }

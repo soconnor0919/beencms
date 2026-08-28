@@ -48,9 +48,11 @@ async function ProgramsList() {
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="rounded-2xl border border-stone dark:border-border bg-cream dark:bg-muted p-16 text-center">
-            <h2 className="font-serif text-2xl font-bold text-charcoal dark:text-foreground">Coming Soon</h2>
+            <h2 className="font-serif text-2xl font-bold text-charcoal dark:text-foreground">
+              Coming Soon
+            </h2>
             <p className="mt-3 text-gray-600 dark:text-gray-400">
-              Trellis Auto Repair is launching in 2025. More programs to follow.
+              Program details are being prepared. Check back soon.
             </p>
             <Link
               href="/contact"
@@ -85,7 +87,9 @@ async function ProgramsList() {
                 </div>
               ) : (
                 <div className="h-52 bg-olive/10 flex items-center justify-center">
-                  <span className="font-serif text-5xl text-olive/30 group-hover:text-olive/50 transition-colors">T</span>
+                  <span className="font-serif text-5xl text-olive/30 group-hover:text-olive/50 transition-colors">
+                    {company.name.charAt(0)}
+                  </span>
                 </div>
               )}
               <div className="p-8">
@@ -100,14 +104,18 @@ async function ProgramsList() {
                   )}
                 </div>
                 {company.tagline && (
-                  <p className="mt-2 font-medium text-olive">{company.tagline}</p>
+                  <p className="mt-2 font-medium text-olive">
+                    {company.tagline}
+                  </p>
                 )}
                 {company.description && (
                   <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
                     {company.description}
                   </p>
                 )}
-                <p className="mt-5 text-sm font-medium text-olive">Learn more →</p>
+                <p className="mt-5 text-sm font-medium text-olive">
+                  Learn more →
+                </p>
               </div>
             </Link>
           ))}
@@ -124,9 +132,11 @@ export default function ProgramsPage() {
     <>
       <section className="bg-cream dark:bg-muted px-6 py-24 text-center">
         <div className="mx-auto max-w-2xl">
-          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">Our Programs</h1>
+          <h1 className="font-serif text-5xl font-bold text-charcoal dark:text-foreground">
+            Our Programs
+          </h1>
           <p className="mt-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            Trellis operates real businesses where trainees earn wages, learn trades, and develop the skills to build a lasting career.
+            Explore our programs, services, and current initiatives.
           </p>
         </div>
       </section>
@@ -137,20 +147,39 @@ export default function ProgramsPage() {
 
       <section className="bg-charcoal px-6 py-24 text-white">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-serif text-3xl font-bold">The Apprenticeship Model</h2>
+          <h2 className="font-serif text-3xl font-bold">
+            The Apprenticeship Model
+          </h2>
           <p className="mt-5 max-w-2xl mx-auto text-gray-300 leading-relaxed">
-            Each Trellis enterprise runs on a master-apprentice structure. Experienced trainers work side-by-side with trainees, passing on trade skills while modeling professional and personal excellence.
+            Our programs combine practical experience, dedicated guidance, and a
+            clear path toward measurable outcomes.
           </p>
           <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3 text-left">
             {[
-              { step: "01", title: "Enter",    body: "Trainees are placed in a Trellis enterprise with paid wages and structured hours." },
-              { step: "02", title: "Learn",    body: "Trade skills, professional habits, and life skills are built through daily mentorship." },
-              { step: "03", title: "Graduate", body: "After 12–15 months, graduates transition to full-time employment with partner businesses." },
+              {
+                step: "01",
+                title: "Begin",
+                body: "Choose the program or service that fits your goals.",
+              },
+              {
+                step: "02",
+                title: "Build",
+                body: "Develop skills and momentum with structured support.",
+              },
+              {
+                step: "03",
+                title: "Advance",
+                body: "Apply what you have learned to reach the next milestone.",
+              },
             ].map((item) => (
               <div key={item.step} className="rounded-xl bg-white/5 p-7">
-                <div className="font-serif text-3xl font-bold text-olive-light">{item.step}</div>
+                <div className="font-serif text-3xl font-bold text-olive-light">
+                  {item.step}
+                </div>
                 <h3 className="mt-3 font-semibold text-white">{item.title}</h3>
-                <p className="mt-2 text-sm text-gray-400 leading-relaxed">{item.body}</p>
+                <p className="mt-2 text-sm text-gray-400 leading-relaxed">
+                  {item.body}
+                </p>
               </div>
             ))}
           </div>
