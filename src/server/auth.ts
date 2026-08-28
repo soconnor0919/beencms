@@ -1,11 +1,26 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { and, eq } from "drizzle-orm";
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
-import { auditLog } from "~/server/db/schema";
+import { auditLog, cmsSite } from "~/server/db/schema";
 import { env } from "~/env";
 import { sendAccountEmail } from "~/lib/email";
 import { twoFactor } from "better-auth/plugins";
+
+async function trustedSiteOrigins() {
+  const origins = new Set([new URL(env.BETTER_AUTH_URL).origin]);
+  const sites = await db
+    .select({ hostname: cmsSite.hostname })
+    .from(cmsSite)
+    .where(
+      and(eq(cmsSite.domainStatus, "verified"), eq(cmsSite.status, "active")),
+    );
+  for (const site of sites) {
+    if (site.hostname) origins.add(`https://${site.hostname}`);
+  }
+  return [...origins];
+}
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -35,6 +50,7 @@ export const auth = betterAuth({
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: trustedSiteOrigins,
   plugins: [twoFactor({ issuer: "hadlockCMS" })],
   databaseHooks: {
     session: {
@@ -45,7 +61,7 @@ export const auth = betterAuth({
             .select({ email: schema.user.email })
             .from(schema.user)
             .where(
-              (await import("drizzle-orm")).eq(schema.user.id, session.userId),
+              eq(schema.user.id, session.userId),
             )
             .get();
           await db.insert(auditLog).values({
