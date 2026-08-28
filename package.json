@@ -22,7 +22,7 @@
     "dev": "next dev --turbo",
     "preview": "next build && next start",
     "start": "next start",
-    "start:production": "bun run db:migrate && bun run db:seed >/dev/null && next start",
+    "start:production": "bun run db:migrate && bun run db:seed >/dev/null && if [ \"$PROVISION_TRELLIS\" = \"true\" ]; then bun run db:seed:trellis >/dev/null; fi && next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

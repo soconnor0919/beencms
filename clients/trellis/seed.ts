@@ -12,6 +12,8 @@ import * as schema from "../../src/server/db/schema";
 
 const DB_PATH = process.env.DATABASE_URL ?? "db.sqlite";
 const SITE_ID = "trellis";
+const SITE_HOSTNAME =
+  process.env.TRELLIS_HOSTNAME?.trim().toLowerCase() || null;
 const sqlite = new Database(DB_PATH);
 const db = drizzle(sqlite, { schema });
 
@@ -492,11 +494,24 @@ if (!defaultSite) {
       id: SITE_ID,
       name: "Trellis Workforce Development",
       slug: "trellis",
+      hostname: SITE_HOSTNAME,
+      domainStatus: SITE_HOSTNAME ? "verified" : "unconfigured",
+      domainVerifiedAt: SITE_HOSTNAME ? new Date() : null,
       locale: "en-US",
       timezone: "America/New_York",
     })
     .run();
   console.log("✓ Trellis client workspace seeded");
+} else if (SITE_HOSTNAME) {
+  db.update(schema.cmsSite)
+    .set({
+      hostname: SITE_HOSTNAME,
+      domainStatus: "verified",
+      domainVerifiedAt: new Date(),
+    })
+    .where(eq(schema.cmsSite.id, SITE_ID))
+    .run();
+  console.log(`✓ Trellis hostname configured: ${SITE_HOSTNAME}`);
 }
 if (adminUser) {
   db.insert(schema.siteMembership)

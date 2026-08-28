@@ -11,6 +11,11 @@ ID. Re-running the command is safe.
 Set `TRELLIS_OWNER_EMAIL` and `TRELLIS_OWNER_PASSWORD` to override the local
 provisioning credentials.
 
+Set `PROVISION_TRELLIS=true` in a production deployment to run this idempotent
+provisioner at startup. `TRELLIS_HOSTNAME` assigns a provider-controlled,
+pre-verified hostname to the tenant; customer-owned domains should continue to
+use the normal DNS ownership verification flow.
+
 Runtime content belongs in the database and tenant media storage. The files in
 this directory are the reproducible initial provisioning package only.
 
