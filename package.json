@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "next build",
+    "build:production": "DATABASE_URL=/tmp/hadlockcms-build.sqlite next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:baseline": "tsx --tsconfig tsconfig.json scripts/baseline-migrations.ts",
